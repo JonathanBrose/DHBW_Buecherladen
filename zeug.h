@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define STRINGLAENGE 30
-#define DATEIPUFFERLAENGE 80
+#define STRINGLAENGE 10
+#define DATEIPUFFERLAENGE 4096
 
 typedef struct m_BuchL {
     char titel[STRINGLAENGE];
@@ -39,12 +39,8 @@ void up_BuchLoeschen(t_ListVerwaltung *f);
 
 void up_DateiEinlesen(t_ListVerwaltung *f);
 
-void up_DateiEinlesenP(t_ListVerwaltung *f);
-
 void up_BuchHinzufuegen(t_ListVerwaltung *f);
 
 void up_eingabeDatensatz(t_ListVerwaltung *f);
-
-void up_DateiSpeichernP(t_ListVerwaltung *f);
 
 void up_DateiSpeichern(t_ListVerwaltung *f);

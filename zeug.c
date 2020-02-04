@@ -3,59 +3,69 @@
 void clearInputbuffer(void) {
     while (getchar() != '\n');
 }
-
-void up_BuecherAnzeigen(t_ListVerwaltung *f) {
-
+void up_warte(void){
+    printf("\nDrücken sie eine beliebige Taste um fortzufahren...\n");
+    clearInputbuffer();
+    getchar();
 }
-
+void up_BuecherAnzeigen(t_ListVerwaltung *f) {
+    t_BuchL *mom = f->start;
+    int i = 0;
+    printf("%-4d: %10s %10s %10s %10s\n",0,"Titel","Autor", "Verlag", "Preis");
+    while (mom) {
+       printf("%-4d: %10s %10s %10s %10.2f\n",i+1, mom->titel,mom->autor, mom->verlag, mom->preis);
+       mom = mom->danach;
+       i++;
+    }
+    up_warte();
+}
+void up_csvZeileLesen(t_ListVerwaltung *f,FILE *datei, int anzahlElemente, const char *typen, ...){
+    va_list elementPointer;
+    va_start(elementPointer, anzahlElemente);
+    char puffer[DATEIPUFFERLAENGE + 1];
+    fgets(puffer, DATEIPUFFERLAENGE, datei);
+    if(anzahlElemente != 0) {
+        if (vsscanf(puffer, typen, elementPointer) == anzahlElemente) {
+            up_BuchHinzufuegen(f);
+        }
+    }
+}
 void up_DateiEinlesen(t_ListVerwaltung *f) {
     FILE *datei;
-    datei = fopen(f->datei, "w");
-    if (!datei) printf("ahhhh\n");
+    datei = fopen(f->datei, "r");
+    if (!datei) printf("Kann Datei nicht oeffnen\n");
     else {
-        char buffer[DATEIPUFFERLAENGE + 1];
-        fgets(buffer, DATEIPUFFERLAENGE, datei);
+        char puffer[DATEIPUFFERLAENGE + 1];
+        up_csvZeileLesen(f,datei, 0, ""); //Kommentarzeile
         while (!feof(datei)) {
-            if (buffer[0] != '#') {
-                strncpy(f->titel, buffer, DATEIPUFFERLAENGE);
-                buffer[DATEIPUFFERLAENGE] = 0;
-                strncpy(f->autor, buffer + DATEIPUFFERLAENGE, DATEIPUFFERLAENGE);
-                buffer[DATEIPUFFERLAENGE] = 0;
-                strncpy(f->verlag, buffer + 2 * DATEIPUFFERLAENGE, DATEIPUFFERLAENGE);
-                buffer[DATEIPUFFERLAENGE] = 0;
-                sscanf("%f", buffer + 3 * DATEIPUFFERLAENGE);
-                up_structListe(f);
-            }
-            fgets(buffer, DATEIPUFFERLAENGE, datei);
+            up_csvZeileLesen(f,datei, 4, "%[^|]*c%[^|]*c%[^|]*c%[^\n]*c", f->titel, f->autor, f->verlag, &f->preis);
         }
         fclose(datei);
     }
 }
 
-void up_csvZeileSchreiben(FILE *datei, int anzahlElemente, ...) {
+void up_csvZeileSchreiben(FILE *datei,int anzahlElemente, const char *typen, ...) {
     va_list elementPointer;
     va_start(elementPointer, anzahlElemente);
-    char buffer[STRINGLAENGE];
-    for (int i = 0; i < anzahlElemente; i++) {
-        strcpy(buffer, va_arg(elementPointer, char*));
-        fputs(buffer, datei);
-        fputs(";", datei);
-    }
+    char puffer[STRINGLAENGE*anzahlElemente];
+    vsprintf(puffer,typen, elementPointer);
+    fputs(puffer, datei);
     fputs("\n", datei);
 }
 
 void up_DateiSpeichern(t_ListVerwaltung *f) {
     FILE *datei;
     datei = fopen(f->datei, "w");
-    if (!datei) printf("Can´t open File\n");
+    if (!datei) fprintf(stderr,"Kann Datei nicht oeffnen\n");
     else {
-        char buffer[STRINGLAENGE];
         t_BuchL *mom = f->start;
-        while (!mom) {
-
+        up_csvZeileSchreiben(datei, 4, "%-10s|%-10s|%-10s|%-10s", "Titel", "Autor", "Verlag","Preis");
+        while (mom) {
+            up_csvZeileSchreiben(datei, 4, "%-10s|%-10s|%-10s|%-10.2f", mom->titel, mom->autor, mom->verlag, mom->preis);
             mom = mom->danach;
         }
         fclose(datei);
+        printf("\nDatei erfolgreich gespeichert...\n");
     }
 }
 
@@ -117,15 +127,6 @@ void up_BuchLoeschen(t_ListVerwaltung *f) {
         f->momentan = momentanNeu;
     } else {
         printf("Liste leer\n");
-    }
-}
-
-void up_BuchVertauschen(t_BuchL *item1, t_BuchL *item2) {
-    if (!item1 && !item2) {
-        if (!item1->davor) item1->davor->danach = item2;
-        if (!item1->danach) item1->danach->davor = item2->davor;
-        if (!item2->davor) item2->davor->danach = item1;
-        if (!item2->danach) item2->danach->davor = item1->davor;
     }
 }
 

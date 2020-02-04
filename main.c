@@ -7,6 +7,16 @@ int main() {
     f->momentan = 0;
     f->zwischen = 0;
     strcpy(f->datei, "Hannes.txt");
+    strcpy(f->titel,"test");
+    strcpy(f->autor,"ich");
+    strcpy(f->verlag,"du");
+    f->preis = 99;
+    up_BuchHinzufuegen(f);
+    strcpy(f->titel,"Herr");
+    strcpy(f->autor,"der");
+    strcpy(f->verlag,"Ringe");
+    f->preis = 19.99;
+    up_BuchHinzufuegen(f);
     menu(f);
     return 0;
 }
@@ -15,7 +25,7 @@ void menu(t_ListVerwaltung *f) {
     char eingabe, success;
     while (1) {
         do {
-            //system("clearInputbuffer");
+            //system("clear");
             printf("\nWillkommen beim Buchladen der DHBW!\n");
             printf("(1) Datensatz einlesen\n");
             printf("(2) Datensatz ausgeben\n");
@@ -24,7 +34,7 @@ void menu(t_ListVerwaltung *f) {
             printf("(5) Datei speichern\n");
             printf("(6) Daten sortieren\n");
             printf("(7) Listenzeiger ausgeben\n");
-            printf("(9) Programm beenden\n\n");
+            printf("(q) Programm beenden\n\n");
             success = scanf("%c", &eingabe);
             clearInputbuffer();
             if (!success) fprintf(stderr, "Fehlerhafte Eingabe\n");
@@ -40,17 +50,17 @@ void menu(t_ListVerwaltung *f) {
                         up_BuchLoeschen(f);
                         break;
                     case '4':
-                        up_DateiEinlesenP(f);
+                        up_DateiEinlesen(f);
                         break;
                     case '5':
-                        up_DateiSpeichernP(f);
+                        up_DateiSpeichern(f);
                         break;
                     case '6':
                         break;
                     case '7':
                         up_ListeAnzeigen(f);
                         break;
-                    case '9':
+                    case 'q':
                         printf("\nBis bald...\n");
                         return;
                     default:
@@ -68,7 +78,7 @@ void up_eingabeDatensatz(t_ListVerwaltung *f) {
         printf("Gib den %d. Datensatz ein...", i);
         do {
             printf("\nTitel des Buches: ");
-            success = scanf("%s", f->titel);
+            success = scanf("%10s", f->titel);
             clearInputbuffer();
             if (!success) fprintf(stderr, "Fehlerhafte Eingabe\n");
         } while (!success);
