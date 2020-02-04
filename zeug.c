@@ -1,12 +1,24 @@
-#include "zeug.h";
+#include "zeug.h"
 
 void clearInputbuffer(void) {
-    while (getchar() != '\n');
+    char c;
+    do
+    {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
 }
 void up_warte(void){
-    printf("\nDrücken sie eine beliebige Taste um fortzufahren...\n");
-    clearInputbuffer();
+    printf("Druecken sie ENTER um fortzufahren...\n");
     getchar();
+}
+int up_BuecherAnzahl(t_ListVerwaltung *f){
+    t_BuchL *mom = f->start;
+    int i = 0;
+    while(mom){
+        i++;
+        mom = mom->danach;
+    }
+    return i;
 }
 void up_BuecherAnzeigen(t_ListVerwaltung *f) {
     t_BuchL *mom = f->start;
@@ -19,73 +31,95 @@ void up_BuecherAnzeigen(t_ListVerwaltung *f) {
     }
     up_warte();
 }
-void up_csvZeileLesen(t_ListVerwaltung *f,FILE *datei, int anzahlElemente, const char *typen, ...){
-    va_list elementPointer;
-    va_start(elementPointer, anzahlElemente);
-    char puffer[DATEIPUFFERLAENGE + 1];
-    fgets(puffer, DATEIPUFFERLAENGE, datei);
-    if(anzahlElemente != 0) {
-        if (vsscanf(puffer, typen, elementPointer) == anzahlElemente) {
-            up_BuchHinzufuegen(f);
+int up_vergleichePreis(t_BuchL *buch1, t_BuchL *buch2){
+    if(!(buch1 && buch2))return 0;
+    return buch1->preis - buch2->preis;
+}
+
+void up_quick(t_BuchL **pointer, int links, int rechts, int(*vergleiche)(t_BuchL*, t_BuchL*)){
+    int ili = links, ire = rechts, med;
+    t_BuchL *temp;
+    med = (ili+ire)/2;
+    while(ili < ire){
+        while(vergleiche(pointer[ili], pointer[med])){
+            ili++;
+        }
+        while(-vergleiche(pointer[ire], pointer[med])){
+            ire--;
+        }
+        temp = pointer[ili];
+        pointer[ili] = pointer[ire];
+        pointer[ire] = temp;
+        if(ili == med) {
+            med = ire;
+        }
+        else if(ire == med) {
+            med = ili;
+        }
+
+        if(ili < med) ili++;
+        if(ire > med) ire--;
+
+        if(links < med-1) {
+            up_quick(pointer,links, med-1, vergleiche);
+        }
+        if(rechts > med+1) {
+            up_quick(pointer,med+1,rechts, vergleiche);
         }
     }
 }
-void up_DateiEinlesen(t_ListVerwaltung *f) {
-    FILE *datei;
-    datei = fopen(f->datei, "r");
-    if (!datei) printf("Kann Datei nicht oeffnen\n");
-    else {
-        char puffer[DATEIPUFFERLAENGE + 1];
-        up_csvZeileLesen(f,datei, 0, ""); //Kommentarzeile
-        while (!feof(datei)) {
-            up_csvZeileLesen(f,datei, 4, "%[^|]*c%[^|]*c%[^|]*c%[^\n]*c", f->titel, f->autor, f->verlag, &f->preis);
-        }
-        fclose(datei);
+void up_quicksort(t_ListVerwaltung *f, int(*vergleiche)(t_BuchL*, t_BuchL*)){
+    int anzahl = up_BuecherAnzahl(f);
+    t_BuchL *pointer[anzahl], *momentan=f->start;
+    for(int i = 0; i< anzahl; i++){
+        pointer[i]= momentan;
+        momentan = momentan->danach;
     }
-}
-
-void up_csvZeileSchreiben(FILE *datei,int anzahlElemente, const char *typen, ...) {
-    va_list elementPointer;
-    va_start(elementPointer, anzahlElemente);
-    char puffer[STRINGLAENGE*anzahlElemente];
-    vsprintf(puffer,typen, elementPointer);
-    fputs(puffer, datei);
-    fputs("\n", datei);
-}
-
-void up_DateiSpeichern(t_ListVerwaltung *f) {
-    FILE *datei;
-    datei = fopen(f->datei, "w");
-    if (!datei) fprintf(stderr,"Kann Datei nicht oeffnen\n");
-    else {
-        t_BuchL *mom = f->start;
-        up_csvZeileSchreiben(datei, 4, "%-10s|%-10s|%-10s|%-10s", "Titel", "Autor", "Verlag","Preis");
-        while (mom) {
-            up_csvZeileSchreiben(datei, 4, "%-10s|%-10s|%-10s|%-10.2f", mom->titel, mom->autor, mom->verlag, mom->preis);
-            mom = mom->danach;
-        }
-        fclose(datei);
-        printf("\nDatei erfolgreich gespeichert...\n");
+    up_quick(pointer, 0, anzahl-1, vergleiche);
+    f->start = pointer[0];
+    f->ende  = pointer[anzahl];
+    f->momentan = f->ende;
+    for(int i = 1; i < anzahl; i++){
+        if(i<anzahl-1)
+            pointer[i]->danach = pointer[i+1];
+        if(i > 0)
+            pointer[i]->davor = pointer[i-1];
     }
-}
 
-void up_BuchVertauschen(t_BuchL *buch1, t_BuchL *buch2) {
+}
+void up_BuchVertauschen(t_ListVerwaltung *f,t_BuchL *buch1, t_BuchL *buch2) {
     if (buch1 && buch2) {
-        t_BuchL *temp;
-        temp = buch2->danach;
-        buch2->danach = buch1->danach;
-        buch1->danach = temp;
-        temp = buch2->davor;
-        buch2->davor = buch1->davor;
-        buch1->davor = temp;
-        if (buch1->danach)
-            buch1->danach->davor = buch1;
+        t_BuchL buch1Kopie = *buch1, buch2Kopie = *buch2;
+        buch1->davor = buch2Kopie.davor;
+        buch1->danach = buch2Kopie.danach;
+        buch2->davor = buch1Kopie.davor;
+        buch2->danach = buch1Kopie.danach;
+
+        if (buch1->danach){
+            if(buch1->danach == buch1) {
+                buch1->danach = buch2;
+                buch2->danach = buch1;
+            }else{
+                buch1->danach->davor = buch1;
+            }
+        }
+        if (buch2->danach){
+            if(buch2->danach == buch2) {
+                buch2->danach = buch1;
+                buch1->davor = buch2;
+            }else{
+                buch2->danach->davor = buch2;
+            }
+        }
         if (buch1->davor)
             buch1->davor->danach = buch1;
-        if (buch2->danach)
-            buch2->danach->davor = buch2;
+        else
+            f->start = buch1;
+
         if (buch2->davor)
             buch2->davor->danach = buch2;
+        else
+            f->start = buch2;
     }
 }
 
@@ -99,11 +133,11 @@ void up_structListe(t_ListVerwaltung *f) {
 void up_BuchHinzufuegen(t_ListVerwaltung *f) {
     f->momentan = (t_BuchL *) malloc(sizeof(t_BuchL));
     up_structListe(f);
-    f->momentan->davor = f->zwischen;
+    f->momentan->davor = f->ende;
     f->momentan->danach = 0;
-    if (!f->zwischen) f->start = f->momentan;
-    else f->zwischen->danach = f->momentan;
-    f->zwischen = f->momentan;
+    if (!f->ende) f->start = f->momentan;
+    else f->ende->danach = f->momentan;
+    f->ende = f->momentan;
 }
 
 void up_BuchLoeschen(t_ListVerwaltung *f) {
@@ -130,16 +164,15 @@ void up_BuchLoeschen(t_ListVerwaltung *f) {
     }
 }
 
-void up_ListeAnzeigen(t_ListVerwaltung *f) {
+void up_ListenZeigerAnzeigen(t_ListVerwaltung *f) {
     f->momentan = f->start;
-    printf("%-20s %10s %10s %10s\n", "Titel", "momentan", "danach", "davor");
+    printf("%-20s %10s %10s %10s\n", "Titel", "davor", "momentan", "danach");
     while (f->momentan) {
-        printf("%-20s %10x %10x %10x\n", f->momentan->titel, f->momentan, f->momentan->danach, f->momentan->davor);
+        printf("%-20s %10x %10x %10x\n", f->momentan->titel, f->momentan->davor, f->momentan, f->momentan->danach);
         f->momentan = f->momentan->danach;
     }
     if (f->momentan == f->start)printf("Liste leer\n");
-    printf("Press any key to continue...\n");
-    getchar();
+    up_warte();
 
 }
 

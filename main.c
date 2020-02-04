@@ -5,17 +5,23 @@ int main() {
     f = &feld;
     f->start = 0;
     f->momentan = 0;
-    f->zwischen = 0;
+    f->ende = 0;
     strcpy(f->datei, "Hannes.txt");
     strcpy(f->titel,"test");
     strcpy(f->autor,"ich");
     strcpy(f->verlag,"du");
     f->preis = 99;
     up_BuchHinzufuegen(f);
+    strcpy(f->titel,"xd");
+    f->preis = 23;
+    up_BuchHinzufuegen(f);
     strcpy(f->titel,"Herr");
     strcpy(f->autor,"der");
     strcpy(f->verlag,"Ringe");
     f->preis = 19.99;
+    up_BuchHinzufuegen(f);
+    strcpy(f->titel,"lol");
+    f->preis = 177;
     up_BuchHinzufuegen(f);
     menu(f);
     return 0;
@@ -56,9 +62,10 @@ void menu(t_ListVerwaltung *f) {
                         up_DateiSpeichern(f);
                         break;
                     case '6':
+                        up_quicksort(f, up_vergleichePreis);
                         break;
                     case '7':
-                        up_ListeAnzeigen(f);
+                        up_ListenZeigerAnzeigen(f);
                         break;
                     case 'q':
                         printf("\nBis bald...\n");
