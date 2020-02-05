@@ -1,4 +1,4 @@
-#include "zeug.h"
+#include "main.h"
 
 int main() {
     t_ListVerwaltung feld, *f;
@@ -62,7 +62,7 @@ void menu(t_ListVerwaltung *f) {
                         up_DateiSpeichern(f);
                         break;
                     case '6':
-                        up_sort(f, up_vergleichePreis);
+                        up_verkListe_sort(f, up_vergleicheBuchPreis);
                         break;
                     case '7':
                         up_ListenZeigerAnzeigen(f);

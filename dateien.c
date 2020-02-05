@@ -1,4 +1,4 @@
-#include "zeug.h"
+#include "main.h"
 
 void up_zeileLesen(t_ListVerwaltung *f, FILE *datei, int anzahlElemente, const char *typen, ...) {
     va_list elementPointer;
@@ -41,10 +41,10 @@ void up_DateiSpeichern(t_ListVerwaltung *f) {
     datei = fopen(f->datei, "w");
     if (!datei) fprintf(stderr, "Kann Datei nicht oeffnen\n");
     else {
-        t_BuchL *mom = f->start;
-        up_zeileSchreiben(datei, 4, "%-30s|%-30s|%-30s|%-30s", "Titel", "Autor", "Verlag", "Preis");
+        t_vL_element *mom = f->start;
+        up_zeileSchreiben(datei, 4, "%s|%s|%s|%s", "Titel", "Autor", "Verlag", "Preis");
         while (mom) {
-            up_zeileSchreiben(datei, 4, "%-30s|%-30s|%-30s|%-30.2f", mom->titel, mom->autor, mom->verlag, mom->preis);
+            up_zeileSchreiben(datei, 4, "%s|%s|%s|%f", mom->titel, mom->autor, mom->verlag, mom->preis);
             mom = mom->danach;
         }
         fclose(datei);
