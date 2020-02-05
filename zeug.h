@@ -35,7 +35,9 @@ typedef struct {
 
 int up_vergleichePreis(t_BuchL *buch1, t_BuchL *buch2);
 
-void up_quicksort(t_ListVerwaltung *f, int(*vergleiche)(t_BuchL*, t_BuchL*));
+int up_vergleicheTitel(t_BuchL *buch1, t_BuchL *buch2);
+
+void up_sort(t_ListVerwaltung *f, int(*vergleiche)(t_BuchL*, t_BuchL*));
 
 void clearInputbuffer(void);
 

@@ -2,112 +2,121 @@
 
 void clearInputbuffer(void) {
     char c;
-    do
-    {
+    do {
         c = getchar();
     } while (c != '\n' && c != EOF);
 }
-void up_warte(void){
+
+void up_warte(void) {
     printf("Druecken sie ENTER um fortzufahren...\n");
     getchar();
 }
-int up_BuecherAnzahl(t_ListVerwaltung *f){
+
+int up_BuecherAnzahl(t_ListVerwaltung *f) {
     t_BuchL *mom = f->start;
     int i = 0;
-    while(mom){
+    while (mom) {
         i++;
         mom = mom->danach;
     }
     return i;
 }
+
 void up_BuecherAnzeigen(t_ListVerwaltung *f) {
     t_BuchL *mom = f->start;
     int i = 0;
-    printf("%-4d: %10s %10s %10s %10s\n",0,"Titel","Autor", "Verlag", "Preis");
+    printf("%-4d: %10s %10s %10s %10s\n", 0, "Titel", "Autor", "Verlag", "Preis");
     while (mom) {
-       printf("%-4d: %10s %10s %10s %10.2f\n",i+1, mom->titel,mom->autor, mom->verlag, mom->preis);
-       mom = mom->danach;
-       i++;
+        printf("%-4d: %10s %10s %10s %10.2f\n", i + 1, mom->titel, mom->autor, mom->verlag, mom->preis);
+        mom = mom->danach;
+        i++;
     }
     up_warte();
 }
-int up_vergleichePreis(t_BuchL *buch1, t_BuchL *buch2){
-    if(!(buch1 && buch2))return 0;
+
+int up_vergleichePreis(t_BuchL *buch1, t_BuchL *buch2) {
+    if (!(buch1 && buch2))return 0;
     return buch1->preis - buch2->preis;
 }
 
-void up_quick(t_BuchL **pointer, int links, int rechts, int(*vergleiche)(t_BuchL*, t_BuchL*)){
-    int ili = links, ire = rechts, med;
-    t_BuchL *temp;
-    med = (ili+ire)/2;
-    while(ili < ire){
-        while(vergleiche(pointer[ili], pointer[med])){
-            ili++;
-        }
-        while(-vergleiche(pointer[ire], pointer[med])){
-            ire--;
-        }
-        temp = pointer[ili];
-        pointer[ili] = pointer[ire];
-        pointer[ire] = temp;
-        if(ili == med) {
-            med = ire;
-        }
-        else if(ire == med) {
-            med = ili;
-        }
+int up_vergleicheTitel(t_BuchL *buch1, t_BuchL *buch2) {
+    if (!(buch1 && buch2))return 0;
+    return buch1->titel[0] - buch2->titel[0];
+}
 
-        if(ili < med) ili++;
-        if(ire > med) ire--;
+int up_teile(t_BuchL **daten, int links, int rechts, int(*vergleiche)(t_BuchL *, t_BuchL *)) {
+    int i = links;
+    int j = rechts - 1;
+    t_BuchL *pivot = daten[rechts], *temp;
+    do {
+        while (i < rechts && vergleiche(daten[i], pivot) < 0) {
+            i++;
+        }
+        while (j > links && vergleiche(daten[j], pivot) >= 0) {
+            j--;
+        }
+        if (i < j) {
+            temp = daten[i];
+            daten[i] = daten[j];
+            daten[j] = temp;
+        }
+    } while (i < j);
+    temp = daten[i];
+    daten[i] = daten[rechts];
+    daten[rechts] = temp;
+    return i;
+}
 
-        if(links < med-1) {
-            up_quick(pointer,links, med-1, vergleiche);
-        }
-        if(rechts > med+1) {
-            up_quick(pointer,med+1,rechts, vergleiche);
-        }
+void up_quick(t_BuchL **daten, int links, int rechts, int(*vergleiche)(t_BuchL *, t_BuchL *)) {
+    if (links < rechts) {
+        int teiler = up_teile(daten, links, rechts, vergleiche);
+        up_quick(daten, links, teiler - 1, vergleiche);
+        up_quick(daten, teiler + 1, rechts, vergleiche);
     }
 }
-void up_quicksort(t_ListVerwaltung *f, int(*vergleiche)(t_BuchL*, t_BuchL*)){
+
+void up_sort(t_ListVerwaltung *f, int(*vergleiche)(t_BuchL *, t_BuchL *)) {
     int anzahl = up_BuecherAnzahl(f);
-    t_BuchL *pointer[anzahl], *momentan=f->start;
-    for(int i = 0; i< anzahl; i++){
-        pointer[i]= momentan;
+    t_BuchL *daten[anzahl], *momentan = f->start;
+    for (int i = 0; i < anzahl; i++) {
+        daten[i] = momentan;
         momentan = momentan->danach;
     }
-    up_quick(pointer, 0, anzahl-1, vergleiche);
-    f->start = pointer[0];
-    f->ende  = pointer[anzahl];
-    f->momentan = f->ende;
-    for(int i = 1; i < anzahl; i++){
-        if(i<anzahl-1)
-            pointer[i]->danach = pointer[i+1];
-        if(i > 0)
-            pointer[i]->davor = pointer[i-1];
+    up_quick(daten, 0, anzahl - 1, vergleiche);
+    f->start = daten[0];
+    daten[0]->davor = NULL;
+    for (int i = 0; i < anzahl; i++) {
+        if (i < anzahl - 1)
+            daten[i]->danach = daten[i + 1];
+        if (i > 0)
+            daten[i]->davor = daten[i - 1];
     }
-
+    daten[anzahl - 1]->danach = NULL;
+    f->ende = daten[anzahl - 1];
+    f->momentan = f->ende;
 }
-void up_BuchVertauschen(t_ListVerwaltung *f,t_BuchL *buch1, t_BuchL *buch2) {
-    if (buch1 && buch2) {
-        t_BuchL buch1Kopie = *buch1, buch2Kopie = *buch2;
-        buch1->davor = buch2Kopie.davor;
-        buch1->danach = buch2Kopie.danach;
-        buch2->davor = buch1Kopie.davor;
-        buch2->danach = buch1Kopie.danach;
 
-        if (buch1->danach){
-            if(buch1->danach == buch1) {
+void up_BuchVertauschen(t_ListVerwaltung *f, t_BuchL *buch1, t_BuchL *buch2) {
+    if (buch1 && buch2) {
+        t_BuchL buchKopie = *buch1;
+        buch1->davor = buch2->davor;
+        buch1->danach = buch2->danach;
+        buch2->davor = buchKopie.davor;
+        buch2->danach = buchKopie.danach;
+
+        if (buch1->danach) {
+            if (buch1->danach == buch1) {
                 buch1->danach = buch2;
                 buch2->danach = buch1;
-            }else{
+            } else {
                 buch1->danach->davor = buch1;
             }
         }
-        if (buch2->danach){
-            if(buch2->danach == buch2) {
+        if (buch2->danach) {
+            if (buch2->danach == buch2) {
                 buch2->danach = buch1;
                 buch1->davor = buch2;
-            }else{
+            } else {
                 buch2->danach->davor = buch2;
             }
         }

@@ -7,20 +7,20 @@ int main() {
     f->momentan = 0;
     f->ende = 0;
     strcpy(f->datei, "Hannes.txt");
-    strcpy(f->titel,"test");
-    strcpy(f->autor,"ich");
-    strcpy(f->verlag,"du");
+    strcpy(f->titel, "test");
+    strcpy(f->autor, "ich");
+    strcpy(f->verlag, "du");
     f->preis = 99;
     up_BuchHinzufuegen(f);
-    strcpy(f->titel,"xd");
+    strcpy(f->titel, "xd");
     f->preis = 23;
     up_BuchHinzufuegen(f);
-    strcpy(f->titel,"Herr");
-    strcpy(f->autor,"der");
-    strcpy(f->verlag,"Ringe");
+    strcpy(f->titel, "Herr");
+    strcpy(f->autor, "der");
+    strcpy(f->verlag, "Ringe");
     f->preis = 19.99;
     up_BuchHinzufuegen(f);
-    strcpy(f->titel,"lol");
+    strcpy(f->titel, "lol");
     f->preis = 177;
     up_BuchHinzufuegen(f);
     menu(f);
@@ -62,7 +62,7 @@ void menu(t_ListVerwaltung *f) {
                         up_DateiSpeichern(f);
                         break;
                     case '6':
-                        up_quicksort(f, up_vergleichePreis);
+                        up_sort(f, up_vergleichePreis);
                         break;
                     case '7':
                         up_ListenZeigerAnzeigen(f);

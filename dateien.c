@@ -1,16 +1,17 @@
 #include "zeug.h"
 
-void up_zeileLesen(t_ListVerwaltung *f, FILE *datei, int anzahlElemente, const char *typen, ...){
+void up_zeileLesen(t_ListVerwaltung *f, FILE *datei, int anzahlElemente, const char *typen, ...) {
     va_list elementPointer;
     va_start(elementPointer, anzahlElemente);
     char puffer[DATEIPUFFERLAENGE + 0];
     fgets(puffer, DATEIPUFFERLAENGE, datei);
-    if(anzahlElemente > 0) {
+    if (anzahlElemente > 0) {
         if (vsscanf(puffer, typen, elementPointer) == anzahlElemente) {
             up_BuchHinzufuegen(f);
         }
     }
 }
+
 void up_DateiEinlesen(t_ListVerwaltung *f) {
     FILE *datei;
     datei = fopen(f->datei, "r");
@@ -29,8 +30,8 @@ void up_DateiEinlesen(t_ListVerwaltung *f) {
 void up_zeileSchreiben(FILE *datei, int anzahlElemente, const char *typen, ...) {
     va_list elementPointer;
     va_start(elementPointer, anzahlElemente);
-    char puffer[STRINGLAENGE*anzahlElemente];
-    vsprintf(puffer,typen, elementPointer);
+    char puffer[STRINGLAENGE * anzahlElemente];
+    vsprintf(puffer, typen, elementPointer);
     fputs(puffer, datei);
     fputs("\n", datei);
 }
@@ -38,7 +39,7 @@ void up_zeileSchreiben(FILE *datei, int anzahlElemente, const char *typen, ...) 
 void up_DateiSpeichern(t_ListVerwaltung *f) {
     FILE *datei;
     datei = fopen(f->datei, "w");
-    if (!datei) fprintf(stderr,"Kann Datei nicht oeffnen\n");
+    if (!datei) fprintf(stderr, "Kann Datei nicht oeffnen\n");
     else {
         t_BuchL *mom = f->start;
         up_zeileSchreiben(datei, 4, "%-30s|%-30s|%-30s|%-30s", "Titel", "Autor", "Verlag", "Preis");
