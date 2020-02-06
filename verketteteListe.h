@@ -1,9 +1,26 @@
+//Element der doppelt verketteten Liste
 typedef struct m_verkListe {
     void *inhalt;
     struct m_verkListe *davor, *danach;
 } t_vL_element;
-typedef struct{
+
+//Verwaltungsobjekt der verketteten Liste
+typedef struct {
     t_vL_element *start, *ende;
     int anzahlElemente;
-}t_verkListe;
-int up_verkListe_AnzahlElemente(t_vL_element *liste);
+} t_verkListe;
+
+
+void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger, void *inhalt);
+
+int up_vergleicheBuchPreis(t_vL_element *buch1, t_vL_element *buch2);
+
+int up_vergleicheBuchTitel(t_vL_element *buch1, t_vL_element *buch2);
+
+void up_verkListe_sort(t_verkListe *liste, int(*vergleiche)(t_vL_element *, t_vL_element *), int absteigend);
+
+void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *löschBeginn, int anzahl);
+
+void up_verkListe_Loeschen(t_verkListe *liste);
+
+void up_verkListe_ElementeVertauschen(t_verkListe *liste, t_vL_element *element1, t_vL_element *element2);

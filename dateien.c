@@ -1,6 +1,6 @@
 #include "main.h"
 
-void up_zeileLesen(t_ListVerwaltung *f, FILE *datei, int anzahlElemente, const char *typen, ...) {
+void up_zeileLesen(FILE *datei, int anzahlElemente, const char *typen, ...) {
     va_list elementPointer;
     va_start(elementPointer, anzahlElemente);
     char puffer[DATEIPUFFERLAENGE + 0];
@@ -12,9 +12,10 @@ void up_zeileLesen(t_ListVerwaltung *f, FILE *datei, int anzahlElemente, const c
     }
 }
 
-void up_DateiEinlesen(t_ListVerwaltung *f) {
+void up_DateiEinlesen(char *dateiPfad, t_verkListe *liste) {
+    up_verkListe_Loeschen(liste);
     FILE *datei;
-    datei = fopen(f->datei, "r");
+    datei = fopen(dateiPfad, "r");
     if (!datei) printf("Kann Datei nicht oeffnen\n");
     else {
         char puffer[DATEIPUFFERLAENGE + 0];
@@ -42,6 +43,7 @@ void up_DateiSpeichern(t_ListVerwaltung *f) {
     if (!datei) fprintf(stderr, "Kann Datei nicht oeffnen\n");
     else {
         t_vL_element *mom = f->start;
+        up_zeileSchreiben(datei, )
         up_zeileSchreiben(datei, 4, "%s|%s|%s|%s", "Titel", "Autor", "Verlag", "Preis");
         while (mom) {
             up_zeileSchreiben(datei, 4, "%s|%s|%s|%f", mom->titel, mom->autor, mom->verlag, mom->preis);
