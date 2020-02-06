@@ -13,17 +13,34 @@ void up_warte(void) {
 }
 
 
-
-void up_BuecherAnzeigen(t_ListVerwaltung *f) {
-    t_vL_element *mom = f->start;
+//todo: regex Suche
+void up_BuecherAnzeigen(t_verkListe *liste, ) {
+    t_vL_element *element = liste->start;
+    t_Buch *buch;
     int i = 0;
     printf("%-4d: %10s %10s %10s %10s\n", 0, "Titel", "Autor", "Verlag", "Preis");
-    while (mom) {
-        printf("%-4d: %10s %10s %10s %10.2f\n", i + 1, mom->titel, mom->autor, mom->verlag, mom->preis);
-        mom = mom->danach;
+    while (element) {
+        prin
+        buch = (*buch)(element->inhalt);
+        if() printf("%-4d: %10s %10s %10s %10.2f\n", i + 1, buch->titel, buch->autor, buch->verlag, buch->preis);
+        element = element->danach;
         i++;
     }
     up_warte();
+}
+int regexVergleich(char *s, char *regex){
+    regmatch_t matches[1];
+    int rv;
+    regex_t exp;
+    rv = regcomp(&exp, "-?[0-9]+(\\.[0-9]+)?", REG_EXTENDED);
+    if (rv != 0) {
+        printf("regcomp failed with %d\n", rv);
+    }
+    if (regexec(&exp, s, 1, matches, 0) == 0) {
+        printf("\"%s\" matches characters %d - %d\n", s, matches[0].rm_so, matches[0].rm_eo);
+    } else {
+        printf("\"%s\" does not match\n", s);
+    }
 }
 
 
