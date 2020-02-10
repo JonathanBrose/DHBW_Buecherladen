@@ -7,9 +7,10 @@
 #include "buch.h"
 #include "menu.h"
 #ifdef __linux__
-#define CLEAR_CONSOLE system("clear");
-#elseif _WIN32
-#define CLEAR_CONSOLE system("cls");
+#define CLEAR_CONSOLE system("clear")
+#endif
+#ifdef _WIN32
+#define CLEAR_CONSOLE system("cls")
 #endif
 
 void up_erstelleTestBuecher(t_verkListe *buecherListe);
