@@ -11,22 +11,6 @@ void clearInputbuffer(void);
 
 void up_warte(void);
 
-void up_structListe(t_ListVerwaltung *f);
+void up_EingabeString(char *eingabe, char *eingabeBeschreibung, char *fehlertext);
 
-void menu(t_ListVerwaltung *f);
-
-void up_BuecherAnzeigen(t_ListVerwaltung *f);
-
-void up_ListenZeigerAnzeigen(t_ListVerwaltung *f);
-
-void up_verkListe_ElementeVertauschen(t_verkListe *liste, t_vL_element *element1, t_vL_element *element2);
-
-void up_BuchLoeschen(t_ListVerwaltung *f);
-
-void up_DateiEinlesen(t_ListVerwaltung *f);
-
-void up_BuchHinzufuegen(t_ListVerwaltung *f);
-
-void up_eingabeDatensatz(t_ListVerwaltung *f);
-
-void up_DateiSpeichern(t_ListVerwaltung *f);
+void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung, char *fehlertext);

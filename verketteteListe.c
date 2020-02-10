@@ -98,7 +98,7 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *löschBegin
     free(löschEnde);
 }
 //gibt das element an Index zurück
-t_vL_element *up_verklisteIndex(t_verkListe *liste, int index) {
+t_vL_element *up_verkListeIndex(t_verkListe *liste, int index) {
     if (index < 0 || index >= liste->anzahlElemente) {
         fprintf(stderr, "Index nicht in der Liste!\n");
         return NULL;
@@ -110,6 +110,18 @@ t_vL_element *up_verklisteIndex(t_verkListe *liste, int index) {
         i++;
     }
     return temp;
+}
+
+t_vL_element* up_verkListeInhalt(t_verkListe *liste, void *inhalt){
+    t_vL_element *rueckgabe, *temp = liste->start;
+    while(temp){
+        if(temp->inhalt == inhalt){
+            rueckgabe = temp;
+            break;
+        }
+       temp = temp->danach;
+    }
+    return rueckgabe;
 }
 
 //löscht gesamte Liste
@@ -228,7 +240,5 @@ void up_ListenZeigerAnzeigen(t_verkListe *liste) {
         printf("%5d.:%-20x %10x %10x %10x\n", element->inhalt, element->davor, element, element->danach);
         element = element->danach;
     }
-    up_warte();
-
 }
 
