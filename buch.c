@@ -31,17 +31,22 @@ void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche){
     while (element) {
         sprintf(s_preis,"%f",buch->preis);
         if(strstr(buch->titel, suche) || strstr(buch->autor, suche) || strstr(buch->verlag, suche) || strstr(s_preis, suche)) {
-            printf("%-4d: %10s %10s %10s %10.2f\n", i + 1, buch->titel, buch->autor, buch->verlag, buch->preis);
+            printf("%-4d: %10s %10s %10s %10.2f\n", i , buch->titel, buch->autor, buch->verlag, buch->preis);
         }
         element = element->danach;
         i++;
     }
 }
 t_verkListe* up_buch_erzeugeBuecherListe(void){
-    t_verkListe buecherListe;
-    return &buecherListe;
+    t_verkListe *buecherListe = up_verkListe_erzeugeListe();
+    return buecherListe;
 }
 
 void up_buch_BuchHinzufuegen(t_verkListe *buecherListe, t_Buch buch){
+    t_Buch *buchNeu = (t_Buch*) malloc(sizeof(t_Buch));
+    strcpy(buchNeu->autor, buch.autor);
+    strcpy(buchNeu->titel, buch.titel);
+    strcpy(buchNeu->verlag, buch.verlag);
+    buchNeu->preis = buch.preis;
     up_verkListe_hinzufuegen(buecherListe, &buch);
 }

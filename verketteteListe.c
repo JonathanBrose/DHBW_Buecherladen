@@ -5,9 +5,17 @@ void up_verkListe_hinzufuegen(t_verkListe *liste, void *inhalt) {
     up_verkListe_elementEinfuegen(liste, NULL, inhalt);
 }
 
+t_verkListe* up_verkListe_erzeugeListe(void){
+    t_verkListe *liste = (t_verkListe*) malloc(sizeof(t_verkListe));
+    liste->anzahlElemente = 0;
+    liste->start = NULL;
+    liste->ende = NULL;
+    return liste;
+}
+
 //Neues Element wird erstellt und hinter vorgaenger eingefuegt
 void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger, void *inhalt) {
-    t_vL_element e, *neu = &e;
+    t_vL_element *neu = (t_vL_element*) (malloc(sizeof(t_vL_element)));
     neu->inhalt = inhalt;
     //Vorgänger NUll -> neues Element soll an Anfang der Liste eingefuegt werden
     if (!vorgaenger) {
@@ -36,42 +44,42 @@ void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger,
 }
 
 //negative anzahl löscht nach oben statt nach unten
-void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *löschBeginn, int anzahl) {
+void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int anzahl) {
     //Überprüfung ob Liste leer, oder löschelement = NUll usw...
     if (liste->anzahlElemente == 0) {
         fprintf(stderr, "Liste ist leer!\n");
         return;
-    } else if (!löschBeginn) {
-        printf(stderr, "Zu löschendes Element nicht vorhanden!\n");
+    } else if (!loeschBeginn) {
+        fprintf(stderr, "Zu löschendes Element nicht vorhanden!\n");
         return;
     }
     //Überprüfung ob löschelement in Liste
-    t_vL_element *temp = löschBeginn, *löschEnde = löschBeginn;
-    if (liste->start != löschBeginn) {
+    t_vL_element *temp = loeschBeginn, *loeschEnde = loeschBeginn;
+    if (liste->start != loeschBeginn) {
         while (temp != liste->start) {
             if (temp) temp = temp->davor;
             else {
-                printf(stderr, "Zu löschendes Element nicht in Liste vorhanden!\n");
+                fprintf(stderr, "Zu löschendes Element nicht in Liste vorhanden!\n");
                 return;
             }
         }
     }
     //Bestimmen des Löschbereichs
-    temp = löschBeginn;
+    temp = loeschBeginn;
     int i = 0;
     if (anzahl < 0) {
         i--;
-        while (löschEnde->davor && i > anzahl) {
-            löschEnde = löschEnde->davor;
+        while (loeschEnde->davor && i > anzahl) {
+            loeschEnde = loeschEnde->davor;
             i--;
         }
-        löschBeginn = löschEnde;
-        löschEnde = temp;
+        loeschBeginn = loeschEnde;
+        loeschEnde = temp;
         liste->anzahlElemente += anzahl;
     } else {
         i++;
-        while (löschEnde->danach && i < anzahl) {
-            löschEnde = löschEnde->danach;
+        while (loeschEnde->danach && i < anzahl) {
+            loeschEnde = loeschEnde->danach;
             i++;
             liste->anzahlElemente -= anzahl;
         }
@@ -82,23 +90,25 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *löschBegin
         liste->ende = 0;
     }
     //Löschung
-    if (löschBeginn->davor) {
-        löschBeginn->davor->danach = löschEnde->danach;
+    if (loeschBeginn->davor) {
+        loeschBeginn->davor->danach = loeschEnde->danach;
     } else {
-        liste->start = löschEnde->danach;
+        liste->start = loeschEnde->danach;
     }
-    if (löschEnde->danach) {
-        löschEnde->danach->davor = löschBeginn->davor;
+    if (loeschEnde->danach) {
+        loeschEnde->danach->davor = loeschBeginn->davor;
     }
-    while (löschBeginn != löschEnde) {
-        temp = löschBeginn;
-        löschBeginn = löschBeginn->danach;
+    while (loeschBeginn != loeschEnde) {
+        temp = loeschBeginn;
+        loeschBeginn = loeschBeginn->danach;
+        free(temp->inhalt);
         free(temp);
     }
-    free(löschEnde);
+    free(loeschEnde->inhalt);
+    free(loeschEnde);
 }
 //gibt das element an Index zurück
-t_vL_element *up_verkListeIndex(t_verkListe *liste, int index) {
+t_vL_element* up_verkListeIndex(t_verkListe *liste, int index) {
     if (index < 0 || index >= liste->anzahlElemente) {
         fprintf(stderr, "Index nicht in der Liste!\n");
         return NULL;
@@ -175,7 +185,7 @@ void up_verkListe_sort(t_verkListe *liste, int(*vergleiche)(t_vL_element *, t_vL
         momentan = momentan->danach;
     }
     //sortieren per quicksort
-    up_quick(daten, 0, anzahl - 1, vergleiche);
+    up_quick(daten, 0, anzahl - 1, vergleiche, absteigend);
 
     //Zeiger aus Array zurück in Liste sortieren
     liste->start = daten[0];
@@ -237,7 +247,8 @@ void up_ListenZeigerAnzeigen(t_verkListe *liste) {
     printf("%-27s %10s %10s %10s\n", "Inhalt (Zeiger)", "davor", "momentan", "danach");
     int i = 0;
     while (element) {
-        printf("%5d.:%-20x %10x %10x %10x\n", element->inhalt, element->davor, element, element->danach);
+        printf("%5d.:%-20x %10x %10x %10x\n", i, element->inhalt, element->davor, element, element->danach);
+        i++;
         element = element->danach;
     }
 }

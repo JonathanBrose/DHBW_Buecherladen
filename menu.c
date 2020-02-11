@@ -1,21 +1,28 @@
-#include "menu.h"
+#include "main.h"
 
-t_menu *up_menu_erzeugeMenu(t_verkListe *buecherListe) {
-    t_menu menu;
-    t_verkListe menuEintraege;
-    menu.buecherListe = buecherListe;
-    menu.menuEintraege = &menuEintraege;
-    return &menu;
+t_menu* up_menu_erzeugeMenu(t_verkListe *buecherListe, char *titel) {
+    t_menu *menu = (t_menu*) malloc(sizeof(t_menu));
+    t_verkListe *menuEintraege = up_verkListe_erzeugeListe();
+    menu->buecherListe = buecherListe;
+    strcpy(menu->titel,titel);
+    menu->menuEintraege = menuEintraege;
+    return menu;
 }
 
-void up_menu_Eintraghinzufuegen(t_menu *menu, char *titel, char *trigger, t_menu *unterMenu,
-                                void(*funktion)(t_verkListe *)) {
-    t_menuEintrag menuEintrag;
-    menuEintrag.titel = titel;
+t_menu* up_menu_erzeugeUnterMenu(t_menu *menu, char *titel){
+    t_menu *untermenu = up_menu_erzeugeMenu(menu->buecherListe,titel);
+    untermenu->dateipfad = menu->dateipfad;
+    return untermenu;
+}
+
+void up_menu_EintragHinzufuegen(t_menu *menu, char *titel, char *trigger, t_menu *unterMenu,
+                                void(*funktion)(t_menu *)) {
+    t_menuEintrag *menuEintrag = (t_menuEintrag*) malloc(sizeof(t_menuEintrag));
+    menuEintrag->titel = titel;
     char format[10];
     sprintf(format, "%s%d%s", "%", MAX_TRIGGER_LAENGE, "s");
-    sprintf(menuEintrag.trigger, format, trigger);
-    menuEintrag.funktion = funktion;
+    sprintf(menuEintrag->trigger, format, trigger);
+    menuEintrag->funktion = funktion;
     up_verkListe_hinzufuegen(menu->menuEintraege, &menuEintrag);
 }
 
@@ -29,7 +36,7 @@ void up_menu_Anzeigen(t_menu *menu) {
     printf("*** %s ***\n", menu->titel);
     while (temp) {
         menuEintrag = *(t_menuEintrag *) (temp->inhalt);
-        sprintf(puffer, "(%s)", menuEintrag.trigger);
+        sprintf(puffer, "[%s]", menuEintrag.trigger);
         printf(format, puffer, menuEintrag.titel);
         temp = temp->danach;
     }
@@ -41,7 +48,7 @@ void up_menu_Auswahl(t_menu *menu) {
     t_vL_element *temp = menu->menuEintraege->start;
     t_menuEintrag menuEintrag;
     char eingabe[MAX_TRIGGER_LAENGE + 1];
-    int ergebnis = 0;
+    char* ergebnis = 0;
     do {
         ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE, stdin);
         if (!ergebnis) {
@@ -53,10 +60,15 @@ void up_menu_Auswahl(t_menu *menu) {
             if (strcmp(eingabe, menuEintrag.trigger)) {
                 if (menuEintrag.untermenu) {
                     up_menu_Anzeigen(menuEintrag.untermenu);
-                } else {
-                    menuEintrag.funktion(menu->buecherListe);
+                    up_menu_Anzeigen(menu);
+                    return;
+                } else if(menuEintrag.funktion){
+                    menuEintrag.funktion(menu);
+                    up_menu_Anzeigen(menu);
+                    return;
+                }else if(!menuEintrag.funktion){
+                    return;
                 }
-                return;
             }
             temp = temp->danach;
         }
@@ -69,9 +81,22 @@ int up_ueberpruefeDateipfad(char* dateipfad){
     fclose(datei);
     return 1;
 }
-void up_menu_ueberpruefeDateipfad(t_menu *menu) {
+int up_ueberpruefeDateipfadErweitert(char* dateipfad){
+    if(!up_ueberpruefeDateipfad(dateipfad)) {
+        if(up_EingabeWeiter("Datei existiert nicht, wollen sie diese anlegen?")){
+            char *befehl;
+            sprintf(befehl,"%s %s", CREATE_FILE, dateipfad);
+            system(befehl);
+        }else{
+            return 0;
+        }
+    }
+    return 1;
+}
+void up_menu_ueberpruefeDateipfadVorhanden(t_menu *menu) {
     if (!up_ueberpruefeDateipfad(menu->dateipfad)) {
-       up_EingabeString(menu->dateipfad, "Bitte geben sie den Dateipfad ein...\n", up_ueberpruefeDateipfad, "Datei wurde nicht gefunden");
+        up_EingabeString(menu->dateipfad, "Bitte geben sie den Dateipfad ein...\n", up_ueberpruefeDateipfadErweitert,
+                         "");
     }
 }
 
