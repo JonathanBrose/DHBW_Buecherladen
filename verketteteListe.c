@@ -2,7 +2,7 @@
 
 //neues Element an Liste anhängen
 void up_verkListe_hinzufuegen(t_verkListe *liste, void *inhalt) {
-    up_verkListe_elementEinfuegen(liste, NULL, inhalt);
+    up_verkListe_elementEinfuegen(liste, liste->ende, inhalt);
 }
 
 t_verkListe* up_verkListe_erzeugeListe(void){

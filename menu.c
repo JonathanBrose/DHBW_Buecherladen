@@ -4,6 +4,7 @@ t_menu* up_menu_erzeugeMenu(t_verkListe *buecherListe, char *titel) {
     t_menu *menu = (t_menu*) malloc(sizeof(t_menu));
     t_verkListe *menuEintraege = up_verkListe_erzeugeListe();
     menu->buecherListe = buecherListe;
+    menu->titel = (char*)malloc((strlen(titel))* sizeof(char));
     strcpy(menu->titel,titel);
     menu->menuEintraege = menuEintraege;
     return menu;
@@ -19,11 +20,11 @@ void up_menu_EintragHinzufuegen(t_menu *menu, char *titel, char *trigger, t_menu
                                 void(*funktion)(t_menu *)) {
     t_menuEintrag *menuEintrag = (t_menuEintrag*) malloc(sizeof(t_menuEintrag));
     menuEintrag->titel = titel;
-    char format[10];
-    sprintf(format, "%s%d%s", "%", MAX_TRIGGER_LAENGE, "s");
-    sprintf(menuEintrag->trigger, format, trigger);
+    menuEintrag->trigger =(char*) malloc(strlen(trigger)* sizeof(char));
+    strcpy(menuEintrag->trigger, trigger);
+    menuEintrag->untermenu = unterMenu;
     menuEintrag->funktion = funktion;
-    up_verkListe_hinzufuegen(menu->menuEintraege, &menuEintrag);
+    up_verkListe_hinzufuegen(menu->menuEintraege, menuEintrag);
 }
 
 void up_menu_Anzeigen(t_menu *menu) {

@@ -2,7 +2,7 @@
 
 
 int main() {
-    t_menu *menu = up_menu_erzeugeMenu(up_buch_erzeugeBuecherListe(),"Bucherdatenbank der DHBW");
+    t_menu *menu = up_menu_erzeugeMenu(up_buch_erzeugeBuecherListe(),"Buecherdatenbank der DHBW");
     up_erstelleTestBuecher(menu->buecherListe);
     up_menu_EintragHinzufuegen(menu, "Datei einlesen", "o", NULL, up_dateiEinlesen);
     up_menu_EintragHinzufuegen(menu, "Datei speichern", "s", NULL, up_dateiSpeichern);

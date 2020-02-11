@@ -4,12 +4,12 @@ typedef struct m_menu {
     t_verkListe *menuEintraege;
     t_verkListe *buecherListe;
     char *dateipfad;
-    char titel[STRINGLAENGE];
+    char *titel;
 } t_menu;
 
 typedef struct m_menuEintrag {
     char *titel;
-    char trigger[MAX_TRIGGER_LAENGE];
+    char *trigger;
     t_menu *untermenu;
     void(*funktion)(t_menu *);
 } t_menuEintrag;
