@@ -1,10 +1,11 @@
 #include "main.h"
 
 void clearInputbuffer(void) {
-    char c;
-    do {
-        c = getchar();
-    } while (c != '\n' && c != EOF);
+//    char c;
+//    do {
+//    c = getchar();
+//    } while (c != '\n' && c != EOF);
+fflush(stdin);
 }
 
 void up_warte(void) {
@@ -19,6 +20,7 @@ void up_EingabeString(char *eingabe, char *eingabeBeschreibung, int(*pruefeGuelt
         clearInputbuffer();
         printf("%s", eingabeBeschreibung);
         ergebnis = fgets(puffer, STRINGLAENGE, stdin);
+        puffer[strspn(puffer, "\n")+1] = 0;
         if (!ergebnis) {
             fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
         } else if (!pruefeGueltigkeit(puffer)) {

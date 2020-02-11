@@ -51,14 +51,16 @@ void up_menu_Auswahl(t_menu *menu) {
     char eingabe[MAX_TRIGGER_LAENGE + 1];
     char* ergebnis = 0;
     do {
+        clearInputbuffer();
         ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE, stdin);
+        eingabe[strspn(eingabe, "\n")+1] = 0;
         if (!ergebnis) {
             fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
             continue;
         }
         while (temp) {
             menuEintrag = *(t_menuEintrag *) (temp->inhalt);
-            if (strcmp(eingabe, menuEintrag.trigger)) {
+            if (!strcmp(eingabe, menuEintrag.trigger)) {
                 if (menuEintrag.untermenu) {
                     up_menu_Anzeigen(menuEintrag.untermenu);
                     up_menu_Anzeigen(menu);
@@ -73,7 +75,7 @@ void up_menu_Auswahl(t_menu *menu) {
             }
             temp = temp->danach;
         }
-        fprintf(stderr, "Fehler bei der Eingabe: Menupunkt %s nicht gefunden\n", eingabe);
+        fprintf(stderr, "Fehler bei der Eingabe: Menupunkt \"%s\" nicht gefunden\n", eingabe);
     } while (!ergebnis);
 }
 int up_ueberpruefeDateipfad(char* dateipfad){
