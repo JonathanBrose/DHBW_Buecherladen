@@ -60,13 +60,15 @@ void up_menu_Auswahl(t_menu *menu) {
         }
         while (temp) {
             menuEintrag = *(t_menuEintrag *) (temp->inhalt);
-            if (!strcmp(eingabe, menuEintrag.trigger)) {
+            if (strcmp(eingabe, menuEintrag.trigger) == 0) {
                 if (menuEintrag.untermenu) {
                     up_menu_Anzeigen(menuEintrag.untermenu);
                     up_menu_Anzeigen(menu);
                     return;
                 } else if(menuEintrag.funktion){
+                    CLEAR_CONSOLE;
                     menuEintrag.funktion(menu);
+                    up_warte();
                     up_menu_Anzeigen(menu);
                     return;
                 }else if(!menuEintrag.funktion){

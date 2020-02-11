@@ -28,40 +28,54 @@ int up_buch_vergleicheVerlag(t_vL_element *buch1, t_vL_element *buch2) {
 void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche) {
     t_vL_element *element = liste->start;
     t_Buch *buch;
-    int i = 0, laenge = 0, zeilenBreite[4] = {0, 0, 0, 0};
-    char format[STRINGLAENGE], s_preis[STRINGLAENGE];
+    int i = 0, laenge = 0, zeilenBreite[5] = {5, 5, 5, 6, 5};
+    char format[STRINGLAENGE], format2[STRINGLAENGE], s_preis[STRINGLAENGE], trennstrings[5][STRINGLAENGE];
     //bestimmen der zeilenbreiten...
     while (element) {
         buch = (t_Buch *) element->inhalt;
-        sprintf(s_preis, "%10.2f", buch->preis);
+        sprintf(s_preis, "%.2f", buch->preis);
         if (strstr(buch->titel, suche) || strstr(buch->autor, suche) || strstr(buch->verlag, suche) ||
             strstr(s_preis, suche)) {
             laenge = strlen(buch->titel);
-            if (laenge > zeilenBreite[0]) zeilenBreite[0] = laenge;
-            laenge = strlen(buch->autor);
             if (laenge > zeilenBreite[1]) zeilenBreite[1] = laenge;
-            laenge = strlen(buch->verlag);
+            laenge = strlen(buch->autor);
             if (laenge > zeilenBreite[2]) zeilenBreite[2] = laenge;
-            laenge = strlen(s_preis);
+            laenge = strlen(buch->verlag);
             if (laenge > zeilenBreite[3]) zeilenBreite[3] = laenge;
+            laenge = strlen(s_preis);
+            if (laenge > zeilenBreite[4]) zeilenBreite[4] = laenge;
         }
         element = element->danach;
     }
     //ausgeben...
-    sprintf(format, "%%-4d: %%%ds %%%ds %%%ds %%%ds\n", zeilenBreite[0], zeilenBreite[1], zeilenBreite[2],
-            zeilenBreite[3]);
-    printf(format, 0, "Titel", "Autor", "Verlag", "Preis");
+    for(int j = 0; j < 5; j++){
+        for(int x = 0; x < zeilenBreite[j]; x++){
+            trennstrings[j][x] = '-';
+        }
+        trennstrings[j][zeilenBreite[j]] = 0;
+    }
+
+    sprintf(format2, "| %%%ds | %%%ds | %%%ds | %%%ds | %%%ds |\n", -zeilenBreite[0], -zeilenBreite[1], -zeilenBreite[2],
+            zeilenBreite[3], zeilenBreite[4]);
+    strcpy(format, format2);
+    char *wechselZeichen = strchr(format, 's');
+    if(wechselZeichen) *wechselZeichen = 'd';
+
+    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+    printf(format2, "Index", "Titel", "Autor", "Verlag", "Preis");
+    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
     element = liste->start;
     while (element) {
         buch = (t_Buch *) element->inhalt;
-        sprintf(s_preis, "%10.2f", buch->preis);
+        sprintf(s_preis, "%.2f", buch->preis);
         if (strstr(buch->titel, suche) || strstr(buch->autor, suche) || strstr(buch->verlag, suche) ||
             strstr(s_preis, suche)) {
-            printf(format, i, buch->titel, buch->autor, buch->verlag, buch->preis);
+            printf(format, i, buch->titel, buch->autor, buch->verlag, s_preis);
         }
         element = element->danach;
         i++;
     }
+    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
 }
 
 t_verkListe *up_buch_erzeugeBuecherListe(void) {
