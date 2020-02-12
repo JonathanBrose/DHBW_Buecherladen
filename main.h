@@ -24,3 +24,5 @@ void up_dateiSpeichern(t_menu *menu);
 void up_BuecherAnzeigen(t_menu *menu);
 
 void up_dateiEinlesen(t_menu *menu);
+
+void up_void(t_menu *menu);

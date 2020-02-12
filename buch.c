@@ -55,8 +55,8 @@ void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche) {
         trennstrings[j][zeilenBreite[j]] = 0;
     }
 
-    sprintf(format2, "| %%%ds | %%%ds | %%%ds | %%%ds | %%%ds |\n", -zeilenBreite[0], -zeilenBreite[1], -zeilenBreite[2],
-            zeilenBreite[3], zeilenBreite[4]);
+    sprintf(format2, "| %%%ds | %%%ds | %%%ds | %%%ds | %%%ds |\n", zeilenBreite[0], -zeilenBreite[1], -zeilenBreite[2],
+            -zeilenBreite[3], zeilenBreite[4]);
     strcpy(format, format2);
     char *wechselZeichen = strchr(format, 's');
     if(wechselZeichen) *wechselZeichen = 'd';
