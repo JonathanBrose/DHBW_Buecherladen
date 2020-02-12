@@ -12,8 +12,10 @@ void clearInputbuffer(void);
 
 void up_warte(void);
 
+int up_pruefeStringLaenge(char *string);
+
 void up_EingabeString(char *eingabe, char *eingabeBeschreibung, int(*pruefeGueltigkeit)(char *), char *fehlermeldung);
 
 int up_EingabeWeiter(char *eingabeBeschreibung);
 
-void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung, char *fehlertext);
+void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung);

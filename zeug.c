@@ -50,7 +50,7 @@ int up_EingabeWeiter(char *eingabeBeschreibung) {
     } while (!ergebnis);
 }
 
-void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung, char *fehlertext) {
+void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung) {
     int ergebnis = 0;
     do {
         clearInputbuffer();
@@ -60,4 +60,9 @@ void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung, char *fehlertext
             fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer, oder kein Gleitkommawert\n");
         }
     } while (!ergebnis);
+}
+
+int up_pruefeStringLaenge(char *string){
+    int laenge = strlen(string);
+    return 1 < laenge && laenge <= STRINGLAENGE;
 }
