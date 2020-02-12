@@ -62,25 +62,24 @@ void up_menu_Auswahl(t_menu *menu) {
     do {
         clearInputbuffer();
         ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE, stdin);
-        eingabe[strspn(eingabe, "\n") + 1] = 0;
+        *strchr(eingabe, '\n') = 0;
         if (!ergebnis) {
             fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
             continue;
         }
         while (temp) {
             menuEintrag = *(t_menuEintrag *) (temp->inhalt);
-            if (strcmp(eingabe, menuEintrag.trigger) == 0) {
-                if (menuEintrag.untermenu) {
-                    up_menu_Anzeigen(menuEintrag.untermenu);
-                    up_menu_Anzeigen(menu);
-                    return;
-                } else if (menuEintrag.funktion) {
+            if (strcmp(eingabe, menuEintrag.trigger) == 0){
+                if(menuEintrag.funktion){
                     CLEAR_CONSOLE;
                     menuEintrag.funktion(menu);
-                    up_warte();
-                    up_menu_Anzeigen(menu);
+                }
+                if (menuEintrag.untermenu) {
+                    CLEAR_CONSOLE;
+                    up_menu_Anzeigen(menuEintrag.untermenu);
                     return;
-                } else if (!menuEintrag.funktion) {
+                }else {
+
                     return;
                 }
             }
