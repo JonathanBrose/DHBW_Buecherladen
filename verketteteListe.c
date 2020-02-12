@@ -1,6 +1,6 @@
 #include "main.h"
 
-//neues Element an Liste anhängen
+//neues Element an Liste anhaengen
 void up_verkListe_hinzufuegen(t_verkListe *liste, void *inhalt) {
     up_verkListe_elementEinfuegen(liste, liste->ende, inhalt);
 }
@@ -17,7 +17,7 @@ t_verkListe* up_verkListe_erzeugeListe(void){
 void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger, void *inhalt) {
     t_vL_element *neu = (t_vL_element*) (malloc(sizeof(t_vL_element)));
     neu->inhalt = inhalt;
-    //Vorgänger NUll -> neues Element soll an Anfang der Liste eingefuegt werden
+    //Vorgaenger NUll -> neues Element soll an Anfang der Liste eingefuegt werden
     if (!vorgaenger) {
         neu->davor = NULL;
         //Es existiert schon ein Liste -> verschieben
@@ -39,32 +39,32 @@ void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger,
     } else {
         neu->danach->davor = neu;
     }
-    //elementzähler erhöhen
+    //elementzaehler erhoehen
     liste->anzahlElemente++;
 }
 
-//negative anzahl löscht nach oben statt nach unten
+//negative anzahl loescht nach oben statt nach unten
 void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int anzahl) {
-    //Überprüfung ob Liste leer, oder löschelement = NUll usw...
+    //Ueberpruefung ob Liste leer, oder loeschelement = NUll usw...
     if (liste->anzahlElemente == 0) {
         fprintf(stderr, "Liste ist leer!\n");
         return;
     } else if (!loeschBeginn) {
-        fprintf(stderr, "Zu löschendes Element nicht vorhanden!\n");
+        fprintf(stderr, "Zu loschendes Element nicht vorhanden!\n");
         return;
     }
-    //Überprüfung ob löschelement in Liste
+    //ueberpruefung ob loeschelement in Liste
     t_vL_element *temp = loeschBeginn, *loeschEnde = loeschBeginn;
     if (liste->start != loeschBeginn) {
         while (temp != liste->start) {
             if (temp) temp = temp->davor;
             else {
-                fprintf(stderr, "Zu löschendes Element nicht in Liste vorhanden!\n");
+                fprintf(stderr, "Zu loschendes Element nicht in Liste vorhanden!\n");
                 return;
             }
         }
     }
-    //Bestimmen des Löschbereichs
+    //Bestimmen des Loeschbereichs
     temp = loeschBeginn;
     int i = 0;
     if (anzahl < 0) {
@@ -89,7 +89,7 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
         liste->start = 0;
         liste->ende = 0;
     }
-    //Löschung
+    //Loeschung
     if (loeschBeginn->davor) {
         loeschBeginn->davor->danach = loeschEnde->danach;
     } else {
@@ -107,15 +107,14 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
     free(loeschEnde->inhalt);
     free(loeschEnde);
 }
-//gibt das element an Index zurück
+//gibt das element an Index zurueck
 t_vL_element* up_verkListeIndex(t_verkListe *liste, int index) {
     if (index < 0 || index >= liste->anzahlElemente) {
-        fprintf(stderr, "Index nicht in der Liste!\n");
         return NULL;
     }
     int i = 0;
     t_vL_element *temp = liste->start;
-    while (temp->danach && i < index - 1) {
+    while (temp->danach && i < index) {
         temp = temp->danach;
         i++;
     }
@@ -134,7 +133,7 @@ t_vL_element* up_verkListeInhalt(t_verkListe *liste, void *inhalt){
     return rueckgabe;
 }
 
-//löscht gesamte Liste
+//loescht gesamte Liste
 void up_verkListe_Loeschen(t_verkListe *liste) {
     up_verkListe_ElementeLoeschen(liste, liste->start, liste->anzahlElemente);
 }
@@ -187,7 +186,7 @@ void up_verkListe_sort(t_verkListe *liste, int(*vergleiche)(t_vL_element *, t_vL
     //sortieren per quicksort
     up_quick(daten, 0, anzahl - 1, vergleiche, absteigend);
 
-    //Zeiger aus Array zurück in Liste sortieren
+    //Zeiger aus Array zurueck in Liste sortieren
     liste->start = daten[0];
     daten[0]->davor = NULL;
     for (int i = 0; i < anzahl; i++) {

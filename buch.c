@@ -54,18 +54,18 @@ void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche) {
         }
         trennstrings[j][zeilenBreite[j]] = 0;
     }
-
+    sprintf(format, "| %%%ds | %%%ds | %%%ds | %%%ds | %%%dd |\n", zeilenBreite[0], -zeilenBreite[1], -zeilenBreite[2],
+            -zeilenBreite[3], zeilenBreite[4]);
     sprintf(format2, "| %%%ds | %%%ds | %%%ds | %%%ds | %%%ds |\n", zeilenBreite[0], -zeilenBreite[1], -zeilenBreite[2],
             -zeilenBreite[3], zeilenBreite[4]);
-    strcpy(format, format2);
-    char *wechselZeichen = strchr(format, 's');
-    if(wechselZeichen) *wechselZeichen = 'd';
-
-    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
-    printf(format2, "Index", "Titel", "Autor", "Verlag", "Preis");
-    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
     element = liste->start;
     while (element) {
+        if(i % AUSGABEZEILEN == 0){
+            printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+            printf(format2, "Index", "Titel", "Autor", "Verlag", "Preis");
+            printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+            if(i > 0) up_warte();
+        }
         buch = (t_Buch *) element->inhalt;
         sprintf(s_preis, "%.2f", buch->preis);
         if (strstr(buch->titel, suche) || strstr(buch->autor, suche) || strstr(buch->verlag, suche) ||

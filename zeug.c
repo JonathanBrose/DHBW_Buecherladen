@@ -5,7 +5,7 @@ void clearInputbuffer(void) {
 //    do {
 //    c = getchar();
 //    } while (c != '\n' && c != EOF);
-fflush(stdin);
+    fflush(stdin);
 }
 
 void up_warte(void) {
@@ -20,7 +20,7 @@ void up_EingabeString(char *eingabe, char *eingabeBeschreibung, int(*pruefeGuelt
         clearInputbuffer();
         printf("%s", eingabeBeschreibung);
         ergebnis = fgets(puffer, STRINGLAENGE, stdin);
-        puffer[strspn(puffer, "\n")+1] = 0;
+        *strchr(puffer, '\n') = 0;
         if (!ergebnis) {
             fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
         } else if (!pruefeGueltigkeit(puffer)) {
@@ -30,6 +30,7 @@ void up_EingabeString(char *eingabe, char *eingabeBeschreibung, int(*pruefeGuelt
     } while (!ergebnis);
     strcpy(eingabe, puffer);
 }
+
 int up_EingabeWeiter(char *eingabeBeschreibung) {
     int ergebnis;
     char eingabe;
@@ -39,11 +40,11 @@ int up_EingabeWeiter(char *eingabeBeschreibung) {
         ergebnis = scanf("%c", &eingabe);
         if (!ergebnis) {
             fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer, oder ungültiger Character\n");
-        } else if(eingabe == 'j' || eingabe == 'J'){
+        } else if (eingabe == 'j' || eingabe == 'J') {
             return 1;
-        } else if(eingabe == 'n' || eingabe == 'N'){
+        } else if (eingabe == 'n' || eingabe == 'N') {
             return 0;
-        }else {
+        } else {
             fprintf(stderr, "Fehler bei der Eingabe: ungültiger Character: %c\n", eingabe);
             ergebnis = 0;
         }
@@ -62,7 +63,31 @@ void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung) {
     } while (!ergebnis);
 }
 
-int up_pruefeStringLaenge(char *string){
-    int laenge = strlen(string);
+int up_pruefeStringLaenge(char *string) {
+    long long laenge = strlen(string);
     return 1 < laenge && laenge <= STRINGLAENGE;
+}
+
+int up_pruefeLoeschSyntax(char *eingabe) {
+    char *eingabeKopie;
+    strcpy(eingabeKopie, eingabe);
+    char *ptr = strtok(eingabeKopie, ",");
+    int i = 0, c = 0;
+    char getrennt[STRINGLAENGE][STRINGLAENGE];
+    while (ptr) {
+        strcpy(getrennt[c], ptr);
+        ptr = strtok(NULL, ",");
+        c++;
+    }
+    int loeschbereiche[c * 2];
+    for (i = 0; i < c; i++) {
+        ptr = strtok(getrennt[i], "-");
+        while (ptr) {
+            if(sscanf(ptr, "%d", &loeschbereiche[0]) == 0){
+                return 0;
+            }
+            ptr = strtok(NULL, "-");
+        }
+    }
+    return 1;
 }

@@ -5,8 +5,7 @@
 
 #define DATEIPUFFERLAENGE 4096
 #define STRINGLAENGE 100
-#define DATEIPFADLAENGE 350
-
+#define AUSGABEZEILEN 10
 
 void clearInputbuffer(void);
 
@@ -19,3 +18,5 @@ void up_EingabeString(char *eingabe, char *eingabeBeschreibung, int(*pruefeGuelt
 int up_EingabeWeiter(char *eingabeBeschreibung);
 
 void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung);
+
+int up_pruefeLoeschSyntax(char *eingabe);

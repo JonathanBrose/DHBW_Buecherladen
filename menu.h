@@ -5,6 +5,7 @@ typedef struct m_menu {
     t_verkListe *buecherListe;
     char *dateipfad;
     char *titel;
+    char fehlerEingabe[MAX_TRIGGER_LAENGE+1];
 } t_menu;
 
 typedef struct m_menuEintrag {

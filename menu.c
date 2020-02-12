@@ -7,6 +7,7 @@ t_menu *up_menu_erzeugeMenu(t_verkListe *buecherListe, char *titel) {
     menu->titel = (char *) malloc((strlen(titel)) * sizeof(char));
     strcpy(menu->titel, titel);
     menu->menuEintraege = menuEintraege;
+    menu->fehlerEingabe[0] = 0;
     return menu;
 }
 
@@ -26,7 +27,8 @@ void up_menu_EintragHinzufuegen(t_menu *menu, char *titel, char *trigger, t_menu
     menuEintrag->funktion = funktion;
     up_verkListe_hinzufuegen(menu->menuEintraege, menuEintrag);
 }
-void up_menu_DateiEintrag(t_menu *menu){
+
+void up_menu_DateiEintrag(t_menu *menu) {
 
 }
 
@@ -36,14 +38,14 @@ void up_menu_Anzeigen(t_menu *menu) {
     t_menuEintrag menuEintrag;
     char format[STRINGLAENGE], puffer[STRINGLAENGE];
     printf("\n");
-    sprintf(format, "%%%ds %%%ds\n", - (MAX_TRIGGER_LAENGE + 2), -STRINGLAENGE);
+    sprintf(format, "%%%ds %%%ds\n", -(MAX_TRIGGER_LAENGE + 2), -STRINGLAENGE);
     printf("*** %s ***\n", menu->titel);
     while (temp) {
         menuEintrag = *(t_menuEintrag *) (temp->inhalt);
         if (menuEintrag.titel) {
             if (strlen(menuEintrag.trigger) > 0) {
                 sprintf(puffer, "[%s]", menuEintrag.trigger);
-            }else{
+            } else {
                 puffer[0] = 0;
             }
             printf(format, puffer, menuEintrag.titel);
@@ -55,38 +57,41 @@ void up_menu_Anzeigen(t_menu *menu) {
 }
 
 void up_menu_Auswahl(t_menu *menu) {
+    //Initialisierung
     t_vL_element *temp = menu->menuEintraege->start;
     t_menuEintrag menuEintrag;
-    char eingabe[MAX_TRIGGER_LAENGE + 1];
-    char *ergebnis = 0;
-    do {
-        clearInputbuffer();
-        ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE, stdin);
-        *strchr(eingabe, '\n') = 0;
-        if (!ergebnis) {
-            fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
-            continue;
-        }
-        while (temp) {
-            menuEintrag = *(t_menuEintrag *) (temp->inhalt);
-            if (strcmp(eingabe, menuEintrag.trigger) == 0){
-                if(menuEintrag.funktion){
-                    CLEAR_CONSOLE;
-                    menuEintrag.funktion(menu);
-                }
-                if (menuEintrag.untermenu) {
-                    CLEAR_CONSOLE;
-                    up_menu_Anzeigen(menuEintrag.untermenu);
-                    return;
-                }else {
-
-                    return;
-                }
+    char eingabe[MAX_TRIGGER_LAENGE + 1], *ergebnis = 0;
+    //Eingabefehler ueberpruefen
+    if (strlen(menu->fehlerEingabe) > 0)
+        fprintf(stderr, "Fehler bei der Eingabe: Menupunkt \"%s\" nicht gefunden\n", menu->fehlerEingabe);
+    menu->fehlerEingabe[0] = 0;
+    //Eingabe
+    clearInputbuffer();
+    ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE, stdin);
+    *strchr(eingabe, '\n') = 0;
+    if (!ergebnis) {
+        fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
+        return;
+    }
+    while (temp) {
+        menuEintrag = *(t_menuEintrag *) (temp->inhalt);
+        if (strcmp(eingabe, menuEintrag.trigger) == 0) {
+            if (menuEintrag.funktion) {
+                CLEAR_CONSOLE;
+                menuEintrag.funktion(menu);
             }
-            temp = temp->danach;
+            if (menuEintrag.untermenu) {
+                CLEAR_CONSOLE;
+                up_menu_Anzeigen(menuEintrag.untermenu);
+                return;
+            } else {
+                return;
+            }
         }
-        fprintf(stderr, "Fehler bei der Eingabe: Menupunkt \"%s\" nicht gefunden\n", eingabe);
-    } while (!ergebnis);
+        temp = temp->danach;
+    }
+    strcpy(menu->fehlerEingabe, eingabe);
+    up_menu_Anzeigen(menu);
 }
 
 int up_ueberpruefeDateipfad(char *dateipfad) {
