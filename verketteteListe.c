@@ -7,6 +7,12 @@ void up_verkListe_hinzufuegen(t_verkListe *liste, void *inhalt) {
 
 t_verkListe* up_verkListe_erzeugeListe(void){
     t_verkListe *liste = (t_verkListe*) malloc(sizeof(t_verkListe));
+    if (!liste) {
+        fprintf(stderr,
+                "Malloc fehlgeschlagen, kein Hauptspeicher mehr verfuegbar\n"
+                "Bitte andere Programme schließen und nochmal versuchen\n");
+        return NULL;
+    }
     liste->anzahlElemente = 0;
     liste->start = NULL;
     liste->ende = NULL;
@@ -16,6 +22,12 @@ t_verkListe* up_verkListe_erzeugeListe(void){
 //Neues Element wird erstellt und hinter vorgaenger eingefuegt
 void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger, void *inhalt) {
     t_vL_element *neu = (t_vL_element*) (malloc(sizeof(t_vL_element)));
+    if (!neu) {
+        fprintf(stderr,
+                "Malloc fehlgeschlagen, kein Hauptspeicher mehr verfuegbar\n"
+                "Bitte Datensatze abspeichern, fluechtige Daten loeschen und erneut versuchen\n");
+        return;
+    }
     neu->inhalt = inhalt;
     //Vorgaenger NUll -> neues Element soll an Anfang der Liste eingefuegt werden
     if (!vorgaenger) {
@@ -44,7 +56,7 @@ void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger,
 }
 
 //negative anzahl loescht nach oben statt nach unten
-void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int anzahl) {
+void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int zusatzAnzahl) {
     //Ueberpruefung ob Liste leer, oder loeschelement = NUll usw...
     if (liste->anzahlElemente == 0) {
         fprintf(stderr, "Liste ist leer!\n");
@@ -67,23 +79,22 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
     //Bestimmen des Loeschbereichs
     temp = loeschBeginn;
     int i = 0;
-    if (anzahl < 0) {
-        i--;
-        while (loeschEnde->davor && i > anzahl) {
+    if (zusatzAnzahl < 0) {
+        while (loeschEnde->davor && i > zusatzAnzahl) {
             loeschEnde = loeschEnde->davor;
             i--;
+            liste->anzahlElemente--;
         }
         loeschBeginn = loeschEnde;
         loeschEnde = temp;
-        liste->anzahlElemente += anzahl;
     } else {
-        i++;
-        while (loeschEnde->danach && i < anzahl) {
+        while (loeschEnde->danach && i < zusatzAnzahl) {
             loeschEnde = loeschEnde->danach;
             i++;
-            liste->anzahlElemente -= anzahl;
+            liste->anzahlElemente --;
         }
     }
+    liste->anzahlElemente--;
     if (liste->anzahlElemente <= 0) {
         liste->anzahlElemente = 0;
         liste->start = 0;

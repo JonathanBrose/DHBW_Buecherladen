@@ -20,7 +20,7 @@ int up_buch_vergleicheTitel(t_vL_element *buch1, t_vL_element *buch2);
 
 void up_verkListe_sort(t_verkListe *liste, int(*vergleiche)(t_vL_element *, t_vL_element *), int absteigend);
 
-void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int anzahl);
+void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int zusatzAnzahl);
 
 void up_verkListe_Loeschen(t_verkListe *liste);
 

@@ -19,4 +19,6 @@ int up_EingabeWeiter(char *eingabeBeschreibung);
 
 void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung);
 
-int up_pruefeLoeschSyntax(char *eingabe);
+char up_instant_getch();
+
+
