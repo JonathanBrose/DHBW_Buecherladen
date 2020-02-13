@@ -1,0 +1,20 @@
+Titel|Autor|Verlag|Preis
+Herr der Ringe|J.R.R. Tolkien|Klett-verlag|31.990000
+Spiegel|Dummkopf|Luegenpresse|4.990000
+Bibel|Gott|Himmel|99.989998
+Die Tragoedie Faust|Johann Wolfgang von Goethe|Goethe Print|12.50000
+Als Hitler das rosa Kaninchen stahl|Judith Kerr|Ravensburger|10.00000
+Warten bis der Frieden kommt|Judith Kerr|Ravensburger|9.50000
+Eine Art Familientreffen|Judith Kerr|Ravensburger|10.50000
+Tommy Joe Der Bruder des Falken|Heidi Ulrich|CSV|12.00000
+Tommy Joe Der Sohn des Haeuptlings|Heidi Ulrich|CSV|11.00000
+Tommy Joe Der Freund des Fallenstellers|Heidi Ulrich|CSV|12.50000
+Den Tiger zaehmen|Tony Anthony|Tier Verlag|9.00000
+Die Legende der Waechter 1|Kathryn Lasky|Jumbo Verlag|8.50000
+Die Legende der Waechter 2|Kathryn Lasky|Jumbo Verlag|8.10000
+Die Legende der Waechter 3|Kathryn Lasky|Jumbo Verlag|8.20000
+Die Kaenguru Chroniken|Marc Uwe Kling|Ullstein|7.30000
+Die Kaenguru Apokryphen|Marc Uwe KLing|Ullstein|7.40000
+Die Kaenguru Offenbarung|Marc Uwe Kling|Ullstein|7.50000
+Gruene Gurken|Lena Hach|Mixtvision|6.70000
+Die Jagd nach dem Rollsiegel|Karim Pieritz|Pferdesalami Verlag|14.00000
