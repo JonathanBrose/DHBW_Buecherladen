@@ -2,7 +2,6 @@
 
 
 int main() {
-    //todo NULL check loop
     //Hauptmenu
     t_menu *menu = up_menu_erzeugeMenu(up_buch_erzeugeBuecherListe(), "Buecherdatenbank der DHBW");
     up_erstelleTestBuecher(menu->buecherListe);
@@ -34,10 +33,10 @@ int main() {
     up_menu_EintragHinzufuegen(bearbeitungsmenu, "Datensatz hinzufuegen", "h", bearbeitungsmenu,
                                up_datensatzHinzufuegen);
     up_menu_EintragHinzufuegen(bearbeitungsmenu, "Datensaetze loeschen", "d", bearbeitungsmenu, up_datensaetzeLoeschen);
-    up_menu_EintragHinzufuegen(bearbeitungsmenu, "Alle Datensaetze loeschen", "da", bearbeitungsmenu, up_alleDatensaetzeLoeschen);
+    up_menu_EintragHinzufuegen(bearbeitungsmenu, "Alle Datensaetze loeschen", "da", bearbeitungsmenu,
+                               up_alleDatensaetzeLoeschen);
     up_menu_EintragHinzufuegen(bearbeitungsmenu, "Datensaetze kopieren", "c", bearbeitungsmenu, NULL);
     up_menu_EintragHinzufuegen(bearbeitungsmenu, "Datensaetze bearbeiten", "e", bearbeitungsmenu, NULL);
-    up_menu_EintragHinzufuegen(bearbeitungsmenu, "Datensaetze kopieren & bearbeiten", "ce", bearbeitungsmenu, NULL);
     up_menu_EintragHinzufuegen(bearbeitungsmenu, "Datensatz betrachten", "a", datensatzMenu, NULL);
     up_menu_EintragHinzufuegen(bearbeitungsmenu, "  ", "", bearbeitungsmenu, up_void);
     up_menu_EintragHinzufuegen(bearbeitungsmenu, " [<= zurueck] ", "z", menu, NULL);
@@ -65,14 +64,15 @@ void up_erstelleTestBuecher(t_verkListe *buecherListe) {
     up_buch_BuchHinzufuegen(buecherListe, buch3);
     t_Buch buch4 = {"Die Tragoedie Faust", "Johann Wolfgang von Goethe", "Goethe Print", 12.50};
     up_buch_BuchHinzufuegen(buecherListe, buch4);
-    t_Buch buch5 = {"Mein Kampf", "Adolf Hitler", "Fuehrerprint", 2.30};
-    up_buch_BuchHinzufuegen(buecherListe, buch5);
 }
 
 void up_dateiEinlesen(t_menu *menu) {
     up_ueberpruefeDateipfadVorhanden(menu, 'r');
-    if(up_EingabeWeiter("Datensatz ueberschreiben?\nAnsonsten wird der neue Datensatz an den alten angehaengt\n")){
-        up_verkListe_Loeschen(menu->buecherListe);
+    if (menu->buecherListe->anzahlElemente) {
+        if (up_EingabeWeiter(
+                "Datensatz ueberschreiben?\nAnsonsten wird der neue Datensatz an den alten angehaengt\n")) {
+            up_verkListe_Loeschen(menu->buecherListe);
+        }
     }
     up_dateien_Einlesen(menu->dateipfad, menu->buecherListe);
     up_warte();
@@ -176,59 +176,58 @@ void up_datensaetzeLoeschen(t_menu *menu) {
         j = 0;
         ptr = strtok(getrennt[i], "-");
         while (ptr) {
-            sscanf(ptr, "%d", &loeschbereiche[i*2 + j]);
+            sscanf(ptr, "%d", &loeschbereiche[i * 2 + j]);
             ptr = strtok(NULL, "-");
             j++;
         }
         if (j == 1) {
-            loeschbereiche[i * 2 + 1] = loeschbereiche[i*2];
-        }else if(j == 2){
-            if(loeschbereiche[i*2+1]< loeschbereiche[i*2]){
-                int temp = loeschbereiche[i*2];
-                loeschbereiche[i*2] = loeschbereiche[i*2+1];
-                loeschbereiche[i*2+1] = temp;
+            loeschbereiche[i * 2 + 1] = loeschbereiche[i * 2];
+        } else if (j == 2) {
+            if (loeschbereiche[i * 2 + 1] < loeschbereiche[i * 2]) {
+                int temp = loeschbereiche[i * 2];
+                loeschbereiche[i * 2] = loeschbereiche[i * 2 + 1];
+                loeschbereiche[i * 2 + 1] = temp;
             }
         }
     }
     //loeschen
     for (i = 0; i < c * 2; i += 2) {
-        if (i+2 < c*2) {
-          if(loeschbereiche[i]<=loeschbereiche[i+2]){
+        if (i + 2 < c * 2) {
+            if (loeschbereiche[i] <= loeschbereiche[i + 2]) {
 
-              if(loeschbereiche[i+1]+1>=loeschbereiche[i+2]) {
-                  //Bereich 2 faengt im aktuellen Bereich an, oder beruehrt ihn..
-                  if (loeschbereiche[i + 1] > loeschbereiche[i + 3]) {
-                      //Bereich inkludiert naechsten Bereich
-                      loeschbereiche[i + 3] = loeschbereiche[i + 1];
-                  }
-                  //Bereiche werden vereinigt...
-                  loeschbereiche[i + 2] = loeschbereiche[i];
-                  continue;
-              }else{
-                  //naechster Bereich beginnt nach aktuellem Bereich
-                  //Indizes werden verschoben, da loeschung die indizes aendert.
-                  loeschbereiche[i+2] -= loeschbereiche[i+1]-loeschbereiche[i]+1;
-                  loeschbereiche[i+3] -= loeschbereiche[i+1]-loeschbereiche[i]+1;
-              }
-          }
-          //Bereich faengt im naechsten Bereich an...
-          else{
-              if(loeschbereiche[i+3]<loeschbereiche[i]-1) {
-                  //naechster Bereich liegt vor aktuellem
-              }
-              else if(loeschbereiche[i+3]>loeschbereiche[i+1]){
-                  //naechster Bereich inkludiert aktuellen
-                  continue;
-              }else{
-                  //Bereiche verschraenkt
-                  loeschbereiche[i+3] = loeschbereiche[i+1];
-                  continue;
-              }
-          }
+                if (loeschbereiche[i + 1] + 1 >= loeschbereiche[i + 2]) {
+                    //Bereich 2 faengt im aktuellen Bereich an, oder beruehrt ihn..
+                    if (loeschbereiche[i + 1] > loeschbereiche[i + 3]) {
+                        //Bereich inkludiert naechsten Bereich
+                        loeschbereiche[i + 3] = loeschbereiche[i + 1];
+                    }
+                    //Bereiche werden vereinigt...
+                    loeschbereiche[i + 2] = loeschbereiche[i];
+                    continue;
+                } else {
+                    //naechster Bereich beginnt nach aktuellem Bereich
+                    //Indizes werden verschoben, da loeschung die indizes aendert.
+                    loeschbereiche[i + 2] -= loeschbereiche[i + 1] - loeschbereiche[i] + 1;
+                    loeschbereiche[i + 3] -= loeschbereiche[i + 1] - loeschbereiche[i] + 1;
+                }
+            }
+                //Bereich faengt im naechsten Bereich an...
+            else {
+                if (loeschbereiche[i + 3] < loeschbereiche[i] - 1) {
+                    //naechster Bereich liegt vor aktuellem
+                } else if (loeschbereiche[i + 3] > loeschbereiche[i + 1]) {
+                    //naechster Bereich inkludiert aktuellen
+                    continue;
+                } else {
+                    //Bereiche verschraenkt
+                    loeschbereiche[i + 3] = loeschbereiche[i + 1];
+                    continue;
+                }
+            }
         }
         if (up_verkListeIndex(menu->buecherListe, loeschbereiche[i])) {
             up_verkListe_ElementeLoeschen(menu->buecherListe, up_verkListeIndex(menu->buecherListe, loeschbereiche[i]),
-                                          loeschbereiche[i + 1]-loeschbereiche[i]);
+                                          loeschbereiche[i + 1] - loeschbereiche[i]);
         } else {
             fprintf(stderr, "Index %d nicht in der Liste!\n", loeschbereiche[i]);
         }
@@ -236,7 +235,8 @@ void up_datensaetzeLoeschen(t_menu *menu) {
     printf("Eintraege geloescht...\n");
     up_warte();
 }
-void up_alleDatensaetzeLoeschen(t_menu *menu){
+
+void up_alleDatensaetzeLoeschen(t_menu *menu) {
     up_verkListe_Loeschen(menu->buecherListe);
     printf("Alle Datensaetze geloescht\n");
     up_warte();
@@ -246,10 +246,9 @@ void up_datensaetzeKopieren(t_menu *menu);
 
 void up_datensaetzeBearbeiten(t_menu *menu);
 
-void up_datensaetzeKopierenBearbeiten(t_menu *menu);
 
-void up_datensatzDurchsuchen(t_menu *menu){
-    char suchbegriff[STRINGLAENGE]="", temp;
+void up_datensatzDurchsuchen(t_menu *menu) {
+    char suchbegriff[STRINGLAENGE] = "", temp;
     int i = 0;
     do {
         CLEAR_CONSOLE;
@@ -257,16 +256,16 @@ void up_datensatzDurchsuchen(t_menu *menu){
         up_buch_BuecherAnzeigen(menu->buecherListe, suchbegriff, 0);
         printf("\nsuche: %s", suchbegriff);
         temp = up_instant_getch();
-        if(temp == 8){
+        if (temp == 8) {
             i--;
-            suchbegriff[i]=0;
-        }else if(temp == 13){
+            suchbegriff[i] = 0;
+        } else if (temp == 13) {
             break;
-        }else if(temp !=0){
-            suchbegriff[i]=temp;
+        } else if (temp != 0) {
+            suchbegriff[i] = temp;
             i++;
-            suchbegriff[i]=0;
+            suchbegriff[i] = 0;
         }
-    }while (1);
+    } while (1);
     printf("\n");
 }

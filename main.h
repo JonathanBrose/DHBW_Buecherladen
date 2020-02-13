@@ -50,6 +50,4 @@ void up_datensaetzeKopieren(t_menu *menu);
 
 void up_datensaetzeBearbeiten(t_menu *menu);
 
-void up_datensaetzeKopierenBearbeiten(t_menu *menu);
-
 void up_datensatzDurchsuchen(t_menu *menu);

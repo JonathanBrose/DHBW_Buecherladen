@@ -41,9 +41,8 @@ void up_dateien_Einlesen(char *dateiPfad, t_verkListe *liste) {
         up_dateien_zeileLesen(datei, NULL);
         while (!feof(datei)) {
             if(up_dateien_zeileLesen(datei, &buch)){
-
+                up_buch_BuchHinzufuegen(liste, buch);
             }
-            up_buch_BuchHinzufuegen(liste, buch);
         }
         fclose(datei);
         printf("\nDatei erfolgreich eingelesen...\n");

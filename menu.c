@@ -99,8 +99,9 @@ void up_menu_Auswahl(t_menu *menu) {
     menu->fehlerEingabe[0] = 0;
     //Eingabe
     clearInputbuffer();
-    ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE, stdin);
-    *strchr(eingabe, '\n') = 0;
+    ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE+1, stdin);
+    char *ptr = strchr(eingabe, '\n');
+    if(ptr) *ptr = 0;
     if (!ergebnis) {
         fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
         return;

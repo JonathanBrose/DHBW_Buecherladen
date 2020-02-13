@@ -1,27 +1,44 @@
 #include "main.h"
 
 int up_vergleicheStrings(char *s1, char *s2) {
-    return strcmp(s1, s2);
+    char string1[STRINGLAENGE], string2[STRINGLAENGE];
+    strcpy(string1, s1);
+    strcpy(string2, s2);
+    strlwr(string1);
+    strlwr(string2);
+    int i =0;
+    while(string1[i]!= 0){
+        if(string2[i] == 0){
+            return 1;
+        }
+        if(string1[i] < string2[i]){
+            return -1;
+        }else if(string1[i]> string2[i]){
+            return 1;
+        }
+        i++;
+    }
+    return 0;
 }
 
 int up_buch_vergleichePreis(t_vL_element *buch1, t_vL_element *buch2) {
     if (!(buch1 && buch2))return 0;
-    return ((t_Buch *) buch1->inhalt)->preis - ((t_Buch *) buch2->inhalt)->preis;
+    return ((t_Buch *) buch1->inhalt)->preis * 10000 - ((t_Buch *) buch2->inhalt)->preis * 10000;
 }
 
 int up_buch_vergleicheTitel(t_vL_element *buch1, t_vL_element *buch2) {
     if (!(buch1 && buch2))return 0;
-    return up_vergleicheStrings(((t_Buch *) buch1)->titel, ((t_Buch *) buch2)->titel);
+    return up_vergleicheStrings(((t_Buch *) buch1->inhalt)->titel, ((t_Buch *) buch2->inhalt)->titel);
 }
 
 int up_buch_vergleicheAutor(t_vL_element *buch1, t_vL_element *buch2) {
     if (!(buch1 && buch2))return 0;
-    return up_vergleicheStrings(((t_Buch *) buch1)->autor, ((t_Buch *) buch2)->autor);
+    return up_vergleicheStrings(((t_Buch *) buch1->inhalt)->autor, ((t_Buch *) buch2->inhalt)->autor);
 }
 
 int up_buch_vergleicheVerlag(t_vL_element *buch1, t_vL_element *buch2) {
     if (!(buch1 && buch2))return 0;
-    return up_vergleicheStrings(((t_Buch *) buch1)->autor, ((t_Buch *) buch2)->autor);
+    return up_vergleicheStrings(((t_Buch *) buch1->inhalt)->verlag, ((t_Buch *) buch2->inhalt)->verlag);
 }
 
 //Es werden alle Buecher angezeigt, bei denen suche in min. einem der Felder enthalten ist.
