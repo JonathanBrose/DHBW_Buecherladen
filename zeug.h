@@ -5,7 +5,7 @@
 
 #define DATEIPUFFERLAENGE 4096
 #define STRINGLAENGE 100
-#define AUSGABEZEILEN 10
+#define AUSGABEZEILEN 15
 
 void clearInputbuffer(void);
 

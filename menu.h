@@ -5,6 +5,7 @@ typedef struct m_menu {
     t_verkListe *buecherListe;
     char *dateipfad;
     char *titel;
+    int index;
     char fehlerEingabe[MAX_TRIGGER_LAENGE + 1];
 } t_menu;
 
@@ -28,6 +29,7 @@ void up_menu_Auswahl(t_menu *menu);
 void up_menu_Anzeigen(t_menu *menu);
 
 
+int up_ueberpruefeIndexEingabe(t_menu *menu, char *eingabe);
 
 void up_dateiSpeichernUnter(t_menu *menu);
 

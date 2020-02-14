@@ -3,29 +3,29 @@
 int up_dateien_zeileLesen(FILE *datei, t_Buch *buch) {
     char puffer[DATEIPUFFERLAENGE];
     fgets(puffer, DATEIPUFFERLAENGE, datei);
-    if(buch){
+    if (buch) {
         char *ptr = strtok(puffer, "|");
-        if(ptr){
+        if (ptr) {
             strcpy(buch->titel, ptr);
-        }else{
+        } else {
             return 0;
         }
         ptr = strtok(NULL, "|");
-        if(ptr){
+        if (ptr) {
             strcpy(buch->autor, ptr);
-        }else{
+        } else {
             return 0;
         }
         ptr = strtok(NULL, "|");
-        if(ptr){
+        if (ptr) {
             strcpy(buch->verlag, ptr);
-        }else{
+        } else {
             return 0;
         }
         ptr = strtok(NULL, "|");
-        if(ptr){
-           sscanf(ptr,"%f",&buch->preis);
-        }else{
+        if (ptr) {
+            sscanf(ptr, "%f", &buch->preis);
+        } else {
             return 0;
         }
     }
@@ -40,7 +40,7 @@ void up_dateien_Einlesen(char *dateiPfad, t_verkListe *liste) {
         t_Buch buch;
         up_dateien_zeileLesen(datei, NULL);
         while (!feof(datei)) {
-            if(up_dateien_zeileLesen(datei, &buch)){
+            if (up_dateien_zeileLesen(datei, &buch)) {
                 up_buch_BuchHinzufuegen(liste, buch);
             }
         }
@@ -101,15 +101,15 @@ int up_ueberpruefeDateipfadErweitert(char *dateipfad) {
 }
 
 void up_ueberpruefeDateipfadVorhanden(t_menu *menu, char modus) {
-    int(*funktion)(char *) = up_ueberpruefeDateipfadErweitert;
+    int (*funktion)(char *) = up_ueberpruefeDateipfadErweitert;
     char fehlermeldung[STRINGLAENGE] = "";
-    if(modus == 'r') {
+    if (modus == 'r') {
         funktion = up_ueberpruefeDateipfad;
         sprintf(fehlermeldung, "Datei nicht gefunden\n");
     }
     if (!up_ueberpruefeDateipfad(menu->dateipfad)) {
-            up_EingabeString(menu->dateipfad, "Bitte geben sie den Dateipfad ein...\n",
-                             funktion,
-                             fehlermeldung);
+        up_EingabeString(menu->dateipfad, "Bitte geben sie den Dateipfad ein...\n",
+                         funktion,
+                         fehlermeldung);
     }
 }

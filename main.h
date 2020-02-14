@@ -8,19 +8,20 @@
 #include "buch.h"
 #include "menu.h"
 #include "dateien.h"
-#define CLEAR_CONSOLE system("cls")
 
-void up_erstelleTestBuecher(t_verkListe *buecherListe);
+#define CLEAR_CONSOLE system("cls")
 
 void up_dateiSpeichern(t_menu *menu);
 
 void up_dateiSpeichernUnter(t_menu *menu);
 
-void up_BuecherAnzeigen(t_menu *menu);
+void up_buecherAnzeigen(t_menu *menu);
 
 void up_dateiEinlesen(t_menu *menu);
 
 void up_dateiEinlesenVon(t_menu *menu);
+
+void up_listenZeigerAnzeigen(t_menu *menu);
 
 void up_void(t_menu *menu);
 

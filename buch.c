@@ -1,19 +1,19 @@
 #include "main.h"
-
+//todo refactor alles ausser main.c und *.h
 int up_vergleicheStrings(char *s1, char *s2) {
     char string1[STRINGLAENGE], string2[STRINGLAENGE];
     strcpy(string1, s1);
     strcpy(string2, s2);
     strlwr(string1);
     strlwr(string2);
-    int i =0;
-    while(string1[i]!= 0){
-        if(string2[i] == 0){
+    int i = 0;
+    while (string1[i] != 0) {
+        if (string2[i] == 0) {
             return 1;
         }
-        if(string1[i] < string2[i]){
+        if (string1[i] < string2[i]) {
             return -1;
-        }else if(string1[i]> string2[i]){
+        } else if (string1[i] > string2[i]) {
             return 1;
         }
         i++;
@@ -23,7 +23,7 @@ int up_vergleicheStrings(char *s1, char *s2) {
 
 int up_buch_vergleichePreis(t_vL_element *buch1, t_vL_element *buch2) {
     if (!(buch1 && buch2))return 0;
-    return ((t_Buch *) buch1->inhalt)->preis * 10000 - ((t_Buch *) buch2->inhalt)->preis * 10000;
+    return (int)(((t_Buch *) buch1->inhalt)->preis * 10000 - ((t_Buch *) buch2->inhalt)->preis * 10000);
 }
 
 int up_buch_vergleicheTitel(t_vL_element *buch1, t_vL_element *buch2) {
@@ -42,7 +42,8 @@ int up_buch_vergleicheVerlag(t_vL_element *buch1, t_vL_element *buch2) {
 }
 
 //Es werden alle Buecher angezeigt, bei denen suche in min. einem der Felder enthalten ist.
-void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche, int ausgabezeilen) {
+//index beschraenkt Ausgabe auf Index ausser dieser ist kleiner 0
+void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche, int ausgabezeilen, int index) {
     t_vL_element *element = liste->start;
     t_Buch *buch;
     int i = 0, laenge = 0, zeilenBreite[5] = {5, 5, 5, 6, 5};
@@ -91,7 +92,12 @@ void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche, int ausgabezeilen)
     printf(format2, "Index", "Titel", "Autor", "Verlag", "Preis");
     printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
     while (element) {
-        if (ausgabezeilen > 0 && i > 0 && (i % (ausgabezeilen+1) == 0)) {
+        if (index >= 0 && i != index) {
+            element = element->danach;
+            i++;
+            continue;
+        }
+        if (ausgabezeilen > 0 && i > 0 && (i % (ausgabezeilen + 1) == 0)) {
             printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
             up_warte();
             printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
@@ -127,7 +133,8 @@ t_verkListe *up_buch_erzeugeBuecherListe(void) {
 void up_buch_BuchHinzufuegen(t_verkListe *buecherListe, t_Buch buch) {
     up_verkListe_hinzufuegen(buecherListe, up_buch_klonen(buch));
 }
-t_Buch* up_buch_klonen(t_Buch buch){
+
+t_Buch *up_buch_klonen(t_Buch buch) {
     t_Buch *buchNeu = (t_Buch *) malloc(sizeof(t_Buch));
     if (!buchNeu) {
         fprintf(stderr,

@@ -5,9 +5,11 @@ void clearInputbuffer(void) {
 }
 
 void up_warte(void) {
+    clearInputbuffer();
     printf("Druecken sie ENTER um fortzufahren...\n");
     getchar();
 }
+
 void up_EingabeString(char *eingabe, char *eingabeBeschreibung, int(*pruefeGueltigkeit)(char *), char *fehlermeldung) {
     FILE *ergebnis;
     char puffer[STRINGLAENGE + 1];
@@ -41,9 +43,8 @@ int up_EingabeWeiter(char *eingabeBeschreibung) {
             return 0;
         } else {
             fprintf(stderr, "Fehler bei der Eingabe: ungueltiger Character: %c\n", eingabe);
-            ergebnis = 0;
         }
-    } while (!ergebnis);
+    } while (1);
 }
 
 void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung) {
@@ -59,16 +60,17 @@ void up_EingabeFloat(float *eingabe, char *eingabeBeschreibung) {
 }
 
 int up_pruefeStringLaenge(char *string) {
-    long long laenge = strlen(string);
+    int laenge = strlen(string);
     return 0 < laenge && laenge <= STRINGLAENGE;
 }
-char up_instant_getch(){
+
+char up_instant_getch() {
     char c = 0;
     DWORD mode, count;
-    HANDLE ih = GetStdHandle( STD_INPUT_HANDLE );
-    SetConsoleMode( ih, mode & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT));
-    ReadConsoleA( ih, &c, 1, &count, NULL);
-    SetConsoleMode( ih, mode );
+    HANDLE ih = GetStdHandle(STD_INPUT_HANDLE);
+    SetConsoleMode(ih, mode & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT));
+    ReadConsoleA(ih, &c, 1, &count, NULL);
+    SetConsoleMode(ih, mode);
     return c;
 }
 

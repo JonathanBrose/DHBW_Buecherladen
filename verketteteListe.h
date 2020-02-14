@@ -10,7 +10,7 @@ typedef struct {
     int anzahlElemente;
 } t_verkListe;
 
-t_verkListe* up_verkListe_erzeugeListe(void);
+t_verkListe *up_verkListe_erzeugeListe(void);
 
 void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger, void *inhalt);
 
@@ -28,6 +28,10 @@ void up_verkListe_ElementeVertauschen(t_verkListe *liste, t_vL_element *element1
 
 void up_verkListe_hinzufuegen(t_verkListe *liste, void *inhalt);
 
-t_vL_element* up_verkListeInhalt(t_verkListe *liste, void *inhalt);
+t_vL_element *up_verkListeInhalt(t_verkListe *liste, void *inhalt);
 
-t_vL_element* up_verkListeIndex(t_verkListe *liste, int index);
+t_vL_element *up_verkListeIndex(t_verkListe *liste, int index);
+
+void up_verkListe_dupliziere(t_verkListe *liste, t_vL_element *klonBeginn, int zusatzAnzahl);
+
+void up_verkList_ListenZeigerAnzeigen(t_verkListe *liste, int ausgabezeilen, int index);

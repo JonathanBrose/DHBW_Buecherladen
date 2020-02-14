@@ -15,9 +15,9 @@ int up_buch_vergleicheAutor(t_vL_element *buch1, t_vL_element *buch2);
 
 int up_buch_vergleicheVerlag(t_vL_element *buch1, t_vL_element *buch2);
 
-void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche, int ausgabezeilen);
-
 t_Buch *up_buch_klonen(t_Buch buch);
+
+void up_buch_BuecherAnzeigen(t_verkListe *liste, char *suche, int ausgabezeilen, int index);
 
 t_verkListe *up_buch_erzeugeBuecherListe(void);
 

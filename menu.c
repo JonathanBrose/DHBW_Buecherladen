@@ -27,6 +27,7 @@ t_menu *up_menu_erzeugeMenu(t_verkListe *buecherListe, char *titel) {
                 "Bitte andere Programme schließen und nochmal versuchen\n");
         return NULL;
     }
+    menu->index = 0;
     menu->dateipfad[0] = 0;
     return menu;
 }
@@ -99,9 +100,9 @@ void up_menu_Auswahl(t_menu *menu) {
     menu->fehlerEingabe[0] = 0;
     //Eingabe
     clearInputbuffer();
-    ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE+1, stdin);
+    ergebnis = fgets(eingabe, MAX_TRIGGER_LAENGE + 1, stdin);
     char *ptr = strchr(eingabe, '\n');
-    if(ptr) *ptr = 0;
+    if (ptr) *ptr = 0;
     if (!ergebnis) {
         fprintf(stderr, "Fehler bei der Eingabe: Eingabe leer\n");
         return;
@@ -149,11 +150,11 @@ up_menu_EingabeString(t_menu *menu, char *eingabe, char *eingabeBeschreibung, in
 }
 
 int up_menu_pruefeLoeschSyntax(t_menu *menu, char *eingabe) {
-    if(strlen(eingabe) == 0){
-        fprintf(stderr,"Eingabe leer: ");
+    if (strlen(eingabe) == 0) {
+        fprintf(stderr, "Eingabe leer: ");
         return 0;
     }
-    char *eingabeKopie;
+    char eingabeKopie[STRINGLAENGE];
     strcpy(eingabeKopie, eingabe);
     char *ptr = strtok(eingabeKopie, ",");
     int i = 0, c = 0;
@@ -178,4 +179,16 @@ int up_menu_pruefeLoeschSyntax(t_menu *menu, char *eingabe) {
         }
     }
     return 1;
+}
+
+int up_ueberpruefeIndexEingabe(t_menu *menu, char *eingabe) {
+    if (eingabe) {
+        int index;
+        if (sscanf(eingabe, "%d", &index)) {
+            if (index >= 0 && index < menu->buecherListe->anzahlElemente) {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }

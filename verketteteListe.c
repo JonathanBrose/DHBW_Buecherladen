@@ -5,8 +5,8 @@ void up_verkListe_hinzufuegen(t_verkListe *liste, void *inhalt) {
     up_verkListe_elementEinfuegen(liste, liste->ende, inhalt);
 }
 
-t_verkListe* up_verkListe_erzeugeListe(void){
-    t_verkListe *liste = (t_verkListe*) malloc(sizeof(t_verkListe));
+t_verkListe *up_verkListe_erzeugeListe(void) {
+    t_verkListe *liste = (t_verkListe *) malloc(sizeof(t_verkListe));
     if (!liste) {
         fprintf(stderr,
                 "Malloc fehlgeschlagen, kein Hauptspeicher mehr verfuegbar\n"
@@ -21,7 +21,7 @@ t_verkListe* up_verkListe_erzeugeListe(void){
 
 //Neues Element wird erstellt und hinter vorgaenger eingefuegt
 void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger, void *inhalt) {
-    t_vL_element *neu = (t_vL_element*) (malloc(sizeof(t_vL_element)));
+    t_vL_element *neu = (t_vL_element *) (malloc(sizeof(t_vL_element)));
     if (!neu) {
         fprintf(stderr,
                 "Malloc fehlgeschlagen, kein Hauptspeicher mehr verfuegbar\n"
@@ -55,6 +55,47 @@ void up_verkListe_elementEinfuegen(t_verkListe *liste, t_vL_element *vorgaenger,
     liste->anzahlElemente++;
 }
 
+void up_verkListe_dupliziere(t_verkListe *liste, t_vL_element *klonBeginn, int zusatzAnzahl) {
+    //Ueberpruefung ob Liste leer, oder klonElement = NUll usw...
+    if (liste->anzahlElemente == 0) {
+        fprintf(stderr, "Liste ist leer!\n");
+        return;
+    } else if (!klonBeginn) {
+        fprintf(stderr, "Zu klonendes Element nicht vorhanden!\n");
+        return;
+    }
+    //ueberpruefung ob klonElement in Liste
+    t_vL_element *temp = klonBeginn;
+    if (liste->start != klonBeginn) {
+        while (temp != liste->start) {
+            if (temp) temp = temp->davor;
+            else {
+                fprintf(stderr, "Zu klonendes Element nicht in Liste vorhanden!\n");
+                return;
+            }
+        }
+    }
+    temp = klonBeginn;
+    if (zusatzAnzahl < 0) {
+        up_verkListe_elementEinfuegen(liste, temp->davor, up_buch_klonen(*(t_Buch *) temp->inhalt));
+        temp = temp->davor->davor;
+        while (temp && zusatzAnzahl != 0) {
+            up_verkListe_elementEinfuegen(liste, temp->davor, up_buch_klonen(*(t_Buch *) temp->inhalt));
+            temp = temp->davor->davor;
+            zusatzAnzahl++;
+        }
+    } else {
+        up_verkListe_elementEinfuegen(liste, temp, up_buch_klonen(*(t_Buch *) temp->inhalt));
+        temp = temp->danach->danach;
+        while (temp && zusatzAnzahl != 0) {
+            up_verkListe_elementEinfuegen(liste, temp, up_buch_klonen(*(t_Buch *) temp->inhalt));
+            temp = temp->danach->danach;
+            zusatzAnzahl--;
+        }
+    }
+
+}
+
 //negative anzahl loescht nach oben statt nach unten
 void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBeginn, int zusatzAnzahl) {
     //Ueberpruefung ob Liste leer, oder loeschelement = NUll usw...
@@ -62,7 +103,7 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
         fprintf(stderr, "Liste ist leer!\n");
         return;
     } else if (!loeschBeginn) {
-        fprintf(stderr, "Zu loschendes Element nicht vorhanden!\n");
+        fprintf(stderr, "Zu loeschendes Element nicht vorhanden!\n");
         return;
     }
     //ueberpruefung ob loeschelement in Liste
@@ -71,7 +112,7 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
         while (temp != liste->start) {
             if (temp) temp = temp->davor;
             else {
-                fprintf(stderr, "Zu loschendes Element nicht in Liste vorhanden!\n");
+                fprintf(stderr, "Zu loeschendes Element nicht in Liste vorhanden!\n");
                 return;
             }
         }
@@ -91,7 +132,7 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
         while (loeschEnde->danach && i < zusatzAnzahl) {
             loeschEnde = loeschEnde->danach;
             i++;
-            liste->anzahlElemente --;
+            liste->anzahlElemente--;
         }
     }
     liste->anzahlElemente--;
@@ -118,8 +159,9 @@ void up_verkListe_ElementeLoeschen(t_verkListe *liste, t_vL_element *loeschBegin
     free(loeschEnde->inhalt);
     free(loeschEnde);
 }
+
 //gibt das element an Index zurueck
-t_vL_element* up_verkListeIndex(t_verkListe *liste, int index) {
+t_vL_element *up_verkListeIndex(t_verkListe *liste, int index) {
     if (index < 0 || index >= liste->anzahlElemente) {
         return NULL;
     }
@@ -132,14 +174,14 @@ t_vL_element* up_verkListeIndex(t_verkListe *liste, int index) {
     return temp;
 }
 
-t_vL_element* up_verkListeInhalt(t_verkListe *liste, void *inhalt){
-    t_vL_element *rueckgabe, *temp = liste->start;
-    while(temp){
-        if(temp->inhalt == inhalt){
+t_vL_element *up_verkListeInhalt(t_verkListe *liste, void *inhalt) {
+    t_vL_element *rueckgabe = NULL, *temp = liste->start;
+    while (temp) {
+        if (temp->inhalt == inhalt) {
             rueckgabe = temp;
             break;
         }
-       temp = temp->danach;
+        temp = temp->danach;
     }
     return rueckgabe;
 }
@@ -150,20 +192,21 @@ void up_verkListe_Loeschen(t_verkListe *liste) {
 }
 
 
-int up_quick_teile(t_vL_element **daten, int links, int rechts, int(*vergleiche)(t_vL_element *, t_vL_element *), int absteigend) {
-    if(absteigend){
+int up_quick_teile(t_vL_element **daten, int links, int rechts, int(*vergleiche)(t_vL_element *, t_vL_element *),
+                   int absteigend) {
+    if (absteigend) {
         absteigend = -1;
-    }else{
+    } else {
         absteigend = 1;
     }
     int i = links;
     int j = rechts - 1;
     t_vL_element *pivot = daten[rechts], *temp;
     do {
-        while (i < rechts && absteigend*vergleiche(daten[i], pivot) < 0) {
+        while (i < rechts && absteigend * vergleiche(daten[i], pivot) < 0) {
             i++;
         }
-        while (j > links && absteigend*vergleiche(daten[j], pivot) >= 0) {
+        while (j > links && absteigend * vergleiche(daten[j], pivot) >= 0) {
             j--;
         }
         if (i < j) {
@@ -178,7 +221,8 @@ int up_quick_teile(t_vL_element **daten, int links, int rechts, int(*vergleiche)
     return i;
 }
 
-void up_quick(t_vL_element **daten, int links, int rechts, int(*vergleiche)(t_vL_element *, t_vL_element *), int absteigend) {
+void up_quick(t_vL_element **daten, int links, int rechts, int(*vergleiche)(t_vL_element *, t_vL_element *),
+              int absteigend) {
     if (links < rechts) {
         int teiler = up_quick_teile(daten, links, rechts, vergleiche, absteigend);
         up_quick(daten, links, teiler - 1, vergleiche, absteigend);
@@ -248,18 +292,63 @@ void up_verkListe_ElementeVertauschen(t_verkListe *liste, t_vL_element *element1
             liste->start = element2;
     }
 }
-void up_ListenZeigerAnzeigen(t_verkListe *liste) {
-    if(liste->anzahlElemente == 0) {
-       fprintf(stderr, "Liste ist leer!\n");
-       return;
-    }
+
+void up_verkList_ListenZeigerAnzeigen(t_verkListe *liste, int ausgabezeilen, int index) {
     t_vL_element *element = liste->start;
-    printf("%-27s %10s %10s %10s\n", "Inhalt (Zeiger)", "davor", "momentan", "danach");
-    int i = 0;
+    int i = 0, laenge = 0, zeilenBreite[5] = {5, 15, 8, 8, 8};
+    char format[STRINGLAENGE], format2[STRINGLAENGE], trennstrings[5][STRINGLAENGE], puffer[4][STRINGLAENGE];
+    //bestimmen der zeilenbreiten...
     while (element) {
-        printf("%5d.:%-20x %10x %10x %10x\n", i, element->inhalt, element->davor, element, element->danach);
-        i++;
+        sprintf(puffer[0], "0x%x", element->inhalt);
+        laenge = strlen(puffer[0]);
+        if (laenge > zeilenBreite[1]) zeilenBreite[1] = laenge;
+        sprintf(puffer[0], "0x%x", element->davor);
+        laenge = strlen(puffer[0]);
+        if (laenge > zeilenBreite[2]) zeilenBreite[2] = laenge;
+        sprintf(puffer[0], "0x%x", element);
+        laenge = strlen(puffer[0]);
+        if (laenge > zeilenBreite[3]) zeilenBreite[3] = laenge;
+        sprintf(puffer[0], "0x%x", element->danach);
+        laenge = strlen(puffer[0]);
+        if (laenge > zeilenBreite[4]) zeilenBreite[4] = laenge;
         element = element->danach;
     }
+    //ausgeben...
+    for (int j = 0; j < 5; j++) {
+        for (int x = 0; x < zeilenBreite[j]; x++) {
+            trennstrings[j][x] = '-';
+        }
+        trennstrings[j][zeilenBreite[j]] = 0;
+    }
+    sprintf(format, "| %%%dd | %%%ds | %%%ds | %%%ds | %%%ds |\n", zeilenBreite[0], -zeilenBreite[1], zeilenBreite[2],
+            zeilenBreite[3], zeilenBreite[4]);
+    sprintf(format2, "| %%%ds | %%%ds | %%%ds | %%%ds | %%%ds |\n", zeilenBreite[0], -zeilenBreite[1], zeilenBreite[2],
+            zeilenBreite[3], zeilenBreite[4]);
+    element = liste->start;
+    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+    printf(format2, "Index", "Inhalt (Zeiger)", "davor", "momentan", "danach");
+    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+    while (element) {
+        if (index >= 0 && i != index) {
+            element = element->danach;
+            i++;
+            continue;
+        }
+        if (ausgabezeilen > 0 && i > 0 && (i % (ausgabezeilen + 1) == 0)) {
+            printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+            up_warte();
+            printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+            printf(format2, "Index", "Inhalt (Zeiger)", "davor", "momentan", "danach");
+            printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
+        }
+        sprintf(puffer[0], "0x%x", element->inhalt);
+        sprintf(puffer[1], "0x%x", element->davor);
+        sprintf(puffer[2], "0x%x", element);
+        sprintf(puffer[3], "0x%x", element->danach);
+        printf(format, i, puffer[0], puffer[1], puffer[2], puffer[3]);
+        element = element->danach;
+        i++;
+    }
+    if (i == 0) printf(format2, "leer", "leer", "leer", "leer", "leer");
+    printf(format2, trennstrings[0], trennstrings[1], trennstrings[2], trennstrings[3], trennstrings[4]);
 }
-
